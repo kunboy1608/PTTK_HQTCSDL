@@ -1,25 +1,23 @@
 package org.view;
 
 import java.awt.Component;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import javax.swing.JTextField;
-import org.controller.BillController;
-import org.model.Bill;
+import org.controller.StudentController;
+import org.model.Student;
 import org.resources.MetroUI;
 
-public class BillDialog extends javax.swing.JFrame implements InputDialog<Bill> {
+public class StudentDialog extends javax.swing.JFrame implements InputDialog<Student> {
     
     private int index = -1;
 
-    public BillDialog() {
+    public StudentDialog() {
         //this.setLocationRelativeTo(null);
         drawUI();
     }
     
-    public BillDialog(int index) {
+    public StudentDialog(int index) {
         this();
-        this.addEditInfo(BillController.getInstance().getList().get(index));
+        this.addEditInfo(StudentController.getInstance().getList().get(index));
         this.index = index;
     }
     
@@ -30,37 +28,37 @@ public class BillDialog extends javax.swing.JFrame implements InputDialog<Bill> 
     }
     
     @Override
-    public Bill encapsulate() {
-        return new Bill(
-                txtBillId.getText(),
-                txtRoom.getText(),
-                txtBuilding.getText(),
-                LocalDate.parse(txtCreatedDate.getText(), DateTimeFormatter.ofPattern("dd'/'MM'/'yyyy")),
-                LocalDate.parse(txtCreatedDate.getText(), DateTimeFormatter.ofPattern("dd'/'MM'/'yyyy")),
-                this.txtType.getText(),
-                Integer.valueOf(txtSum.getText())
+    public Student encapsulate() {
+        return new Student(
+//                txtStudentId.getText(),
+//                txtRoom.getText(),
+//                txtBuilding.getText(),
+//                LocalDate.parse(txtCreatedDate.getText(), DateTimeFormatter.ofPattern("dd'/'MM'/'yyyy")),
+//                LocalDate.parse(txtCreatedDate.getText(), DateTimeFormatter.ofPattern("dd'/'MM'/'yyyy")),
+//                this.txtType.getText(),
+//                Integer.valueOf(txtSum.getText())
         );
     }
     
     @Override
     public void editAction(int index) {
-        BillController.getInstance().getList().set(index, this.encapsulate());
+        StudentController.getInstance().getList().set(index, this.encapsulate());
     }
 
     @Override
     public void addAction() {
-        BillController.getInstance().getList().add(this.encapsulate());
+        StudentController.getInstance().getList().add(this.encapsulate());
     }
     
     @Override
-    public void addEditInfo(Bill objInfo) {
-        txtBillId.setText(objInfo.getBillId());
-        txtBuilding.setText(objInfo.getBuilding());
-        txtCreatedDate.setText(objInfo.getCreatedDate().toString());
-        txtRoom.setText(objInfo.getRoom());
-        txtSubmittedDate.setText(objInfo.getSubmittedDate().toString());
-        txtSum.setText(objInfo.getSum().toString());
-        txtType.setText(objInfo.getBillType());
+    public void addEditInfo(Student objInfo) {
+//        txtStudentId.setText(objInfo.getStudentId());
+//        txtBuilding.setText(objInfo.getBuilding());
+//        txtCreatedDate.setText(objInfo.getCreatedDate().toString());
+//        txtRoom.setText(objInfo.getRoom());
+//        txtSubmittedDate.setText(objInfo.getSubmittedDate().toString());
+//        txtSum.setText(objInfo.getSum().toString());
+//        txtType.setText(objInfo.getStudentType());
     }
 
     @Override
@@ -106,7 +104,7 @@ public class BillDialog extends javax.swing.JFrame implements InputDialog<Bill> 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
 
         jLabel1.setFont(new java.awt.Font("Segoe UI Light", 0, 48)); // NOI18N
-        jLabel1.setText("Thông tin Hóa đơn");
+        jLabel1.setText("Thông tin sinh viên");
 
         jLabel2.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel2.setText("Mã Hóa Đơn");
@@ -289,7 +287,7 @@ public class BillDialog extends javax.swing.JFrame implements InputDialog<Bill> 
 
     private void btnSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveActionPerformed
         actionsPerform(index);
-        BillPanel.getInstance().setTableModel(BillController.getInstance().toTable());
+        StudentPanel.getInstance().setTableModel(StudentController.getInstance().toTable());
         this.dispose();
     }//GEN-LAST:event_btnSaveActionPerformed
 

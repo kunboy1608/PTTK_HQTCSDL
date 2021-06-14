@@ -61,6 +61,7 @@ public class DepartmentController implements Controller<Department>, DatabaseOpe
     @Override
     public DefaultTableModel toTable() {
         DefaultTableModel tableModel = new DefaultTableModel();
+        tableModel.setColumnIdentifiers(this.getHeader());
         for (Department b : list) {
             tableModel.addRow(toVector(b));
         }

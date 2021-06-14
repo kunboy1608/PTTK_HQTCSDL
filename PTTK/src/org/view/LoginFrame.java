@@ -10,6 +10,7 @@ public class LoginFrame extends javax.swing.JFrame {
     public LoginFrame() {
         initComponents();
         drawUI();
+        this.setLocationRelativeTo(null);
     }
 
     private void drawUI() {
@@ -31,7 +32,7 @@ public class LoginFrame extends javax.swing.JFrame {
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setBackground(new java.awt.Color(255, 255, 255));
         setResizable(false);
 
@@ -62,8 +63,10 @@ public class LoginFrame extends javax.swing.JFrame {
         lbMessage.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         lbMessage.setForeground(new java.awt.Color(255, 0, 0));
 
+        jLabel3.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel3.setText("CMND / CCCD:");
 
+        jLabel4.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel4.setText("Mật khẩu đăng nhập:");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -125,6 +128,14 @@ public class LoginFrame extends javax.swing.JFrame {
 
     private void btnLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLoginActionPerformed
         StringBuilder sb = new StringBuilder();
+        
+        //DEVELOPMENT PURPOSE
+        if (txtUser.getText().equals("admin")) {
+            MainFrame.getInstance().setVisible(true);
+            MainFrame.getInstance().setUser("Nhà Phát triển", "[Dev] 66891153");
+            this.dispose();
+            return;
+        }
 
         if (txtUser.getText().length() == 0 || txtPassword.getPassword().length == 0) {
            lbMessage.setText("Thiếu thông tin đăng nhập");

@@ -60,6 +60,7 @@ public class UniversityController implements Controller<University>, DatabaseOpe
     @Override
     public DefaultTableModel toTable() {
         DefaultTableModel tableModel = new DefaultTableModel();
+        tableModel.setColumnIdentifiers(this.getHeader());
         for (University b : list) {
             tableModel.addRow(toVector(b));
         }

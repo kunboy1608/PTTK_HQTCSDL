@@ -13,7 +13,7 @@ public class RoomController implements Controller<Room>, DatabaseOperators<Room>
     
     private ArrayList<Room> list = new ArrayList<>();
     
-    private static final RoomController instance = new RoomController();
+    private static RoomController instance = new RoomController();
     
     private RoomController() { }
 
@@ -30,7 +30,7 @@ public class RoomController implements Controller<Room>, DatabaseOperators<Room>
     }
     
     public static RoomController getInstance() {
-        return instance;
+        return RoomController.instance;
     }
     
     @Override
@@ -61,8 +61,9 @@ public class RoomController implements Controller<Room>, DatabaseOperators<Room>
     @Override
     public DefaultTableModel toTable() {
         DefaultTableModel tableModel = new DefaultTableModel();
+        tableModel.setColumnIdentifiers(this.getHeader());
         for (Room b : list) {
-            tableModel.addRow(toVector(b));
+            tableModel.addRow(this.toVector(b));
         }
         return tableModel;
     }

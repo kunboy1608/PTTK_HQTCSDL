@@ -46,7 +46,7 @@ public class BillController implements Controller<Bill>, DatabaseOperators<Bill>
     }
     
     public static BillController getInstance() {
-        return instance;
+        return BillController.instance;
     }
     
     @Override

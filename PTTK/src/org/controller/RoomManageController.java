@@ -72,7 +72,7 @@ public class RoomManageController {
             }
         };
 
-        Statement stmt = User.getConnection().createStatement();
+        Statement stmt = DatabaseController.getConnection().createStatement();
         ResultSet rs = stmt.executeQuery("Select * From HQTCSDL.PHONGO");
 
         while (rs.next()) {
@@ -148,7 +148,7 @@ public class RoomManageController {
         try {
             String sql = "Insert into hqtcsdl.PhongO values(?,?,?,?,0,?)";
             txtIDBuilding = txtIDBuilding.toUpperCase();
-            PreparedStatement ps = User.getConnection().prepareStatement(sql);
+            PreparedStatement ps = DatabaseController.getConnection().prepareStatement(sql);
 
             ps.setString(1, txtNumRoom.concat(txtIDBuilding));
             ps.setString(2, txtIDBuilding);
@@ -174,7 +174,7 @@ public class RoomManageController {
                     + "Where (IDPhongO = '"
                     + numRoom + IDBuilding
                     + "')";
-            PreparedStatement ps = User.getConnection().prepareStatement(sql);
+            PreparedStatement ps = DatabaseController.getConnection().prepareStatement(sql);
             if (ps.executeUpdate() == 1) {
                 removeRowFromModel(numRoom, IDBuilding);
                 return true;
@@ -204,7 +204,7 @@ public class RoomManageController {
                     + txtNumRoom + txtIDBuilding
                     + "')";
 
-            PreparedStatement ps = User.getConnection().prepareStatement(sql);
+            PreparedStatement ps = DatabaseController.getConnection().prepareStatement(sql);
 
             if (ps.executeUpdate() == 1) {
                 // Xóa cột cũ trong model

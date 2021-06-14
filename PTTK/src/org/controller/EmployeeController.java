@@ -69,6 +69,7 @@ public class EmployeeController implements Controller<Employee>, DatabaseOperato
     @Override
     public DefaultTableModel toTable() {
         DefaultTableModel tableModel = new DefaultTableModel();
+        tableModel.setColumnIdentifiers(this.getHeader());
         for (Employee b : list) {
             tableModel.addRow(toVector(b));
         }

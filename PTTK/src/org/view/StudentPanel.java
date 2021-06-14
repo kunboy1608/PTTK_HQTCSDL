@@ -8,10 +8,10 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import jiconfont.IconFontSwing;
 import jiconfont.icons.google_material_design_icons.GoogleMaterialDesignIcons;
-import org.controller.BillController;
+import org.controller.StudentController;
 import org.resources.MetroUI;
 
-public class BillPanel extends javax.swing.JPanel {
+public class StudentPanel extends javax.swing.JPanel {
     
     private final Icon addIcon = MetroUI.getGoogleIcon(MetroUI.icons.ADD_CIRCLE_OUTLINE, 24, Color.BLACK);
     private final Icon removeIcon = MetroUI.getGoogleIcon(MetroUI.icons.REMOVE_CIRCLE_OUTLINE, 24, Color.RED);
@@ -20,13 +20,13 @@ public class BillPanel extends javax.swing.JPanel {
     private final Icon loadIcon = MetroUI.getGoogleIcon(MetroUI.icons.REFRESH, 24, Color.BLACK);
     private final Icon closeIcon = MetroUI.getGoogleIcon(MetroUI.icons.HIGHLIGHT_OFF, 24, Color.WHITE);
     
-    private static final BillPanel instace = new BillPanel("Quản Lý Hóa Đơn");
+    private static final StudentPanel instace = new StudentPanel("Quản Lý Sinh viên");
     
-    public static BillPanel getInstance() {
+    public static StudentPanel getInstance() {
         return instace;
     }
 
-    private BillPanel(String title) {
+    private StudentPanel(String title) {
         initComponents();
         lbTitle.setText(title);
         drawUI();
@@ -169,7 +169,7 @@ public class BillPanel extends javax.swing.JPanel {
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
 
         lbTitle.setFont(new java.awt.Font("Segoe UI Light", 0, 48)); // NOI18N
-        lbTitle.setText("Quản lý Hóa đơn");
+        lbTitle.setText("Quản lý Sinh viên");
 
         jScrollPane1.setBackground(new java.awt.Color(255, 255, 255));
         jScrollPane1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0), 2));
@@ -334,7 +334,7 @@ public class BillPanel extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
-        new BillDialog().setVisible(true);
+        new StudentDialog().setVisible(true);
     }//GEN-LAST:event_btnAddActionPerformed
 
     private void btnEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditActionPerformed
@@ -342,7 +342,7 @@ public class BillPanel extends javax.swing.JPanel {
             MetroUI.notificate("Lỗi: Thiếu đối tượng", "Vui lòng chọn đối tượng trong bảng để thao tác", TrayIcon.MessageType.ERROR);
             return;
         }
-        new BillDialog(viewTable.getSelectedRow()).setVisible(true);
+        new StudentDialog(viewTable.getSelectedRow()).setVisible(true);
     }//GEN-LAST:event_btnEditActionPerformed
 
     private void btnSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchActionPerformed
@@ -366,9 +366,9 @@ public class BillPanel extends javax.swing.JPanel {
         //tìm dòng được chọn
         for (int i = 0; i < viewTable.getRowCount(); i++) {
             if (viewTable.isRowSelected(i)) {
-                BillController.getInstance().delete((String) table.getValueAt(i, 1));
+                StudentController.getInstance().delete((String) table.getValueAt(i, 1));
                 //xóa dòng được chọn khỏi bảng và cập nhật bảng
-                viewTable.setModel(BillController.getInstance().toTable());
+                viewTable.setModel(StudentController.getInstance().toTable());
                 return;
             }
         }

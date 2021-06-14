@@ -1,25 +1,21 @@
 package org.view;
 
-import java.awt.Component;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import javax.swing.JTextField;
-import org.controller.BillController;
-import org.model.Bill;
+import org.controller.EmployeeController;
+import org.model.Employee;
 import org.resources.MetroUI;
 
-public class BillDialog extends javax.swing.JFrame implements InputDialog<Bill> {
+public class EmployeeDialog extends javax.swing.JFrame implements InputDialog<Employee> {
     
     private int index = -1;
 
-    public BillDialog() {
+    public EmployeeDialog() {
         //this.setLocationRelativeTo(null);
         drawUI();
     }
     
-    public BillDialog(int index) {
+    public EmployeeDialog(int index) {
         this();
-        this.addEditInfo(BillController.getInstance().getList().get(index));
+        this.addEditInfo(EmployeeController.getInstance().getList().get(index));
         this.index = index;
     }
     
@@ -30,47 +26,48 @@ public class BillDialog extends javax.swing.JFrame implements InputDialog<Bill> 
     }
     
     @Override
-    public Bill encapsulate() {
-        return new Bill(
-                txtBillId.getText(),
-                txtRoom.getText(),
-                txtBuilding.getText(),
-                LocalDate.parse(txtCreatedDate.getText(), DateTimeFormatter.ofPattern("dd'/'MM'/'yyyy")),
-                LocalDate.parse(txtCreatedDate.getText(), DateTimeFormatter.ofPattern("dd'/'MM'/'yyyy")),
-                this.txtType.getText(),
-                Integer.valueOf(txtSum.getText())
+    public Employee encapsulate() {
+        return new Employee(
+//                txtEmployeeId.getText(),
+//                txtRoom.getText(),
+//                txtBuilding.getText(),
+//                LocalDate.parse(txtCreatedDate.getText(), DateTimeFormatter.ofPattern("dd'/'MM'/'yyyy")),
+//                LocalDate.parse(txtCreatedDate.getText(), DateTimeFormatter.ofPattern("dd'/'MM'/'yyyy")),
+//                this.txtType.getText(),
+//                Integer.valueOf(txtSum.getText())
         );
     }
     
     @Override
     public void editAction(int index) {
-        BillController.getInstance().getList().set(index, this.encapsulate());
+        EmployeeController.getInstance().getList().set(index, this.encapsulate());
     }
 
     @Override
     public void addAction() {
-        BillController.getInstance().getList().add(this.encapsulate());
+        EmployeeController.getInstance().getList().add(this.encapsulate());
     }
     
     @Override
-    public void addEditInfo(Bill objInfo) {
-        txtBillId.setText(objInfo.getBillId());
-        txtBuilding.setText(objInfo.getBuilding());
-        txtCreatedDate.setText(objInfo.getCreatedDate().toString());
-        txtRoom.setText(objInfo.getRoom());
-        txtSubmittedDate.setText(objInfo.getSubmittedDate().toString());
-        txtSum.setText(objInfo.getSum().toString());
-        txtType.setText(objInfo.getBillType());
+    public void addEditInfo(Employee objInfo) {
+//        txtEmployeeId.setText(objInfo.getEmployeeId());
+//        txtBuilding.setText(objInfo.getBuilding());
+//        txtCreatedDate.setText(objInfo.getCreatedDate().toString());
+//        txtRoom.setText(objInfo.getRoom());
+//        txtSubmittedDate.setText(objInfo.getSubmittedDate().toString());
+//        txtSum.setText(objInfo.getSum().toString());
+//        txtType.setText(objInfo.getEmployeeType());
     }
 
     @Override
     public void clear() {
-        for (Component c : this.jPanel1.getComponents()) {
-            if (c instanceof JTextField) {
-                System.out.println(c.getClass().getName());
-                ((JTextField) c).setText("");
-            }
-        }
+//        txtEmployeeId.setText("");
+//        txtBuilding.setText("");
+//        txtCreatedDate.setText("");
+//        txtRoom.setText("");
+//        txtSubmittedDate.setText("");
+//        txtSum.setText("");
+//        txtType.setText("");
     }
     
     @SuppressWarnings("unchecked")
@@ -106,7 +103,7 @@ public class BillDialog extends javax.swing.JFrame implements InputDialog<Bill> 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
 
         jLabel1.setFont(new java.awt.Font("Segoe UI Light", 0, 48)); // NOI18N
-        jLabel1.setText("Thông tin Hóa đơn");
+        jLabel1.setText("Thông tin nhân viên");
 
         jLabel2.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel2.setText("Mã Hóa Đơn");
@@ -289,7 +286,7 @@ public class BillDialog extends javax.swing.JFrame implements InputDialog<Bill> 
 
     private void btnSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveActionPerformed
         actionsPerform(index);
-        BillPanel.getInstance().setTableModel(BillController.getInstance().toTable());
+        EmployeePanel.getInstance().setTableModel(EmployeeController.getInstance().toTable());
         this.dispose();
     }//GEN-LAST:event_btnSaveActionPerformed
 

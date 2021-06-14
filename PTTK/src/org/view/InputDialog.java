@@ -11,9 +11,9 @@ public interface InputDialog<T> {
     public T encapsulate();
     public default void actionsPerform(int index) {
         if (index == ADD_STATE) {
-            editAction(index);
-        } else {
             addAction();
+        } else {
+            editAction(index);
         }
     }
 }

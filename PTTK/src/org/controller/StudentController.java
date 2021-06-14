@@ -64,6 +64,7 @@ public class StudentController implements Controller<Student>, DatabaseOperators
     @Override
     public DefaultTableModel toTable() {
         DefaultTableModel tableModel = new DefaultTableModel();
+        tableModel.setColumnIdentifiers(this.getHeader());
         for (Student b : list) {
             tableModel.addRow(toVector(b));
         }

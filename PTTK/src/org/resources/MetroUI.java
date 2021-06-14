@@ -34,7 +34,7 @@ public class MetroUI {
     public static final Color COLOR_BACKGROUND_SELECTED = Color.GRAY;
     
     public static final Insets metroMargin = new Insets(0, 10, 0, 10);
-    public static final Border selectedBorder = MetroUI.getBorder(Color.WHITE, COLOR_BACKGROUND, 3, 10);
+    public static final Border selectedBorder = MetroUI.getBorder(Color.WHITE, COLOR_BACKGROUND, 3, 10  );
     public static final Border unselectedBorder = MetroUI.getBorder(COLOR_BACKGROUND, COLOR_BACKGROUND, 0, 13);
     public static final Border hoverBorder = MetroUI.getBorder(Color.GRAY, COLOR_BACKGROUND, 3, 10);
     public static final Border buttonBorder = MetroUI.getBorder(Color.BLACK, Color.WHITE, 2, 0);
