@@ -13,16 +13,20 @@ import org.view.dialog.DepartmentDialog;
 
 public class DepartmentPanel extends JPanel implements Panel {
 
-    private static final DepartmentPanel instace = new DepartmentPanel("Quản Lý Phòng Ban");
+    
     private static final String PLACEHOLDER = "Nhập mã phòng ban";
 
+    private static DepartmentPanel instance;
+    
     public static DepartmentPanel getInstance() {
-        return instace;
+        if (instance == null) {
+            instance = new DepartmentPanel();
+        }
+        return instance;
     }
 
-    private DepartmentPanel(String title) {
+    private DepartmentPanel() {
         initComponents();
-        lbTitle.setText(title);
         drawUI();
         this.reloadTable();
     }

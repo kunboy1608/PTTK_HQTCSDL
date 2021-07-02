@@ -208,8 +208,7 @@ public class MetroUI {
             }
         });
     }
-
-    
+ 
     public static Icon getGoogleIcon(GoogleMaterialDesignIcons iconStyle, int size, Color color) {
         IconFontSwing.register(GoogleMaterialDesignIcons.getIconFont());
         return IconFontSwing.buildIcon(iconStyle, size, color);

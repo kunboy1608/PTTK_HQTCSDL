@@ -14,18 +14,22 @@ import org.view.dialog.search.BillSearchDialog;
 
 public class BillPanel extends JPanel implements Panel {
  
-    private static final BillPanel instace = new BillPanel("Quản Lý Hóa Đơn");
+    
     private static final String PLACEHOLDER = "Nhập mã hóa đơn";
     
+    private static BillPanel instance;
+    
     public static BillPanel getInstance() {
-        return instace;
+        if (instance == null) {
+            instance = new BillPanel();
+        }
+        return instance;
     }
 
-    private BillPanel(String title) {
+    private BillPanel() {
         initComponents();
-        lbTitle.setText(title);
-        this.reloadTable();
         drawUI();
+        this.reloadTable();
     }
     
     private void drawUI() {

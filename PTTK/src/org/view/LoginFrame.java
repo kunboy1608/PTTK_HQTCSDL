@@ -2,10 +2,8 @@ package org.view;
 
 import java.awt.Image;
 import java.awt.event.KeyEvent;
-import java.io.IOException;
-import java.sql.SQLException;
 import javax.swing.ImageIcon;
-import org.controller.DatabaseController;
+import org.controller.User;
 import org.resources.MetroUI;
 
 public class LoginFrame extends javax.swing.JFrame {
@@ -16,7 +14,7 @@ public class LoginFrame extends javax.swing.JFrame {
         this.setLocationRelativeTo(null);
     }
 
-    private void drawUI() {
+    public void drawUI() {
         MetroUI.apply(txtUser, "");
         txtPassword.setBorder(MetroUI.textFieldBorder);
         MetroUI.applySpecilized(btnLogin);
@@ -26,9 +24,18 @@ public class LoginFrame extends javax.swing.JFrame {
         StringBuilder sb = new StringBuilder();
         
         //DEVELOPMENT PURPOSE
+        
+
+        if (txtUser.getText().length() == 0 || txtPassword.getPassword().length == 0) {
+           lbMessage.setText("Thiếu thông tin đăng nhập");
+        }
+        
         if (txtUser.getText().equals("admin")) {
-            MainFrame.getInstance().setVisible(true);
-            MainFrame.getInstance().setUser(
+            
+            MainFrame main = new MainFrame();
+            
+            
+            main.setUser(
                 "Nhà Phát triển", 
                 "[Dev] 66891153",
                 new ImageIcon(
@@ -37,27 +44,22 @@ public class LoginFrame extends javax.swing.JFrame {
                         .getScaledInstance(60, 60, Image.SCALE_DEFAULT)
                 )
             );
+            main.setVisible(true);
             this.dispose();
             return;
         }
-
-        if (txtUser.getText().length() == 0 || txtPassword.getPassword().length == 0) {
-           lbMessage.setText("Thiếu thông tin đăng nhập");
+        
+        User.setPassword(txtPassword.getPassword());
+        User.setUsername(txtUser.getText());
+        if (User.Login()) {
+            User.setRole();
+            User.initialInfor();
+            new MainFrame().setVisible(true);
+            this.setVisible(false);
+        } else {
+            lbMessage.setText("Đăng nhập thất bại");
         }
-        try {
-            DatabaseController.setPassword(txtPassword.getPassword());
-            DatabaseController.setUsername(txtUser.getText());
-            if (DatabaseController.Login()) {
-                DatabaseController.setRole();
-                DatabaseController.initialAvatar();
-                DatabaseController.setFullName();
-                this.setVisible(false);
-            } else {
-                lbMessage.setText("Đăng nhập thất bại");
-            }
-        } catch (SQLException | IOException ex) {
-            ex.printStackTrace();
-        }
+        
     }
     
     @SuppressWarnings("unchecked")

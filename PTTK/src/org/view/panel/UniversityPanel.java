@@ -2,7 +2,6 @@ package org.view.panel;
 
 import java.awt.TrayIcon;
 import java.util.ArrayList;
-import javax.swing.JPanel;
 import javax.swing.table.TableModel;
 import jiconfont.IconFontSwing;
 import jiconfont.icons.google_material_design_icons.GoogleMaterialDesignIcons;
@@ -11,18 +10,19 @@ import org.resources.IconUtilities;
 import org.resources.MetroUI;
 import org.view.dialog.UniversityDialog;
 
-public class UniversityPanel extends JPanel implements Panel {
+public class UniversityPanel extends javax.swing.JPanel implements Panel {
  
-    private static final UniversityPanel instace = new UniversityPanel("Quản Lý Trường Học");
-    private static final String PLACEHOLDER = "Nhập mã trường";
+   private static UniversityPanel instance;
     
     public static UniversityPanel getInstance() {
-        return instace;
+        if (instance == null) {
+            instance = new UniversityPanel();
+        }
+        return instance;
     }
 
-    private UniversityPanel(String title) {
+    private UniversityPanel() {
         initComponents();
-        lbTitle.setText(title);
         drawUI();
         this.reloadTable();
     }
@@ -41,7 +41,7 @@ public class UniversityPanel extends JPanel implements Panel {
         MetroUI.apply(btnDelete);
         MetroUI.apply(btnSearch);
         MetroUI.apply(btnReload);
-        MetroUI.apply(txtSearch, PLACEHOLDER);
+        MetroUI.apply(txtSearch, "Nhập mã trường");
     }
     
     
@@ -80,7 +80,7 @@ public class UniversityPanel extends JPanel implements Panel {
     @Override
     public void actionSearch() {
         // kiểm tra xem cái textfield có trống hay không
-        if (txtSearch.getText().equals(PLACEHOLDER)) {
+        if (txtSearch.getText().equals("Nhập mã trường")) {
             this.requireFulfill();
             return;
         }

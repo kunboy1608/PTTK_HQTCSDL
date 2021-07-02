@@ -14,16 +14,17 @@ import org.view.dialog.search.StudentSearchDialog;
 
 public class StudentPanel extends JPanel implements Panel {
 
-    private static final StudentPanel instace = new StudentPanel("Quản Lý Sinh Viên");
-    private static final String PLACEHOLDER = "Nhập CCCD Sinh viên";
-
+    private static StudentPanel instance;
+    
     public static StudentPanel getInstance() {
-        return instace;
+        if (instance == null) {
+            instance = new StudentPanel();
+        }
+        return instance;
     }
 
-    private StudentPanel(String title) {
+    private StudentPanel() {
         initComponents();
-        lbTitle.setText(title);
         drawUI();
         this.reloadTable();
     }
@@ -42,7 +43,7 @@ public class StudentPanel extends JPanel implements Panel {
         MetroUI.apply(btnDelete);
         MetroUI.apply(btnSearch);
         MetroUI.apply(btnReload);
-        MetroUI.apply(txtSearch, PLACEHOLDER);
+        MetroUI.apply(txtSearch, "Nhập mã sinh viên");
     }
 
     @Override
@@ -81,7 +82,7 @@ public class StudentPanel extends JPanel implements Panel {
     @Override
     public void actionSearch() {
         // kiểm tra xem cái textfield có trống hay không
-        if (txtSearch.getText().equals(PLACEHOLDER)) {
+        if (txtSearch.getText().equals("Nhập mã sinh viên")) {
             this.requireFulfill();
             return;
         }

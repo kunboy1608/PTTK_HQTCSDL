@@ -3,69 +3,57 @@ package org.view;
 import java.awt.CardLayout;
 import java.awt.Component;
 import javax.swing.ImageIcon;
-import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 import jiconfont.IconFontSwing;
 import jiconfont.icons.google_material_design_icons.GoogleMaterialDesignIcons;
 import org.resources.IconUtilities;
 import org.resources.MetroUI;
 import org.view.dialog.ChangePasswordDialog;
-import org.view.panel.*;
+import org.view.panel.BillPanel;
+import org.view.panel.BuildingPanel;
+import org.view.panel.DepartmentPanel;
+import org.view.panel.EmployeePanel;
+import org.view.panel.RoomPanel;
+import org.view.panel.StudentPanel;
+import org.view.panel.UniversityPanel;
 
 public class MainFrame extends javax.swing.JFrame {
-        
-    private static final MainFrame INSTANCE = new MainFrame();
-    
-    private JPanel[] panels = new JPanel[]{
-        RoomPanel.getInstance(),
-        UniversityPanel.getInstance(),
-        DepartmentPanel.getInstance(),
-        EmployeePanel.getInstance(),
-        StudentPanel.getInstance(),
-        BillPanel.getInstance(),
-        BuildingPanel.getInstance()
-    };
-    
-    public static MainFrame getInstance() {
-        return INSTANCE;
-    }
-    
-    private MainFrame() {        
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Metal".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(MainFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        
+
+    public MainFrame() {
+//        try {
+//            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+//                if ("Metal".equals(info.getName())) {
+//                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+//                    break;
+//                }
+//            }
+//        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
+//            java.util.logging.Logger.getLogger(MainFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//        }
+
         IconFontSwing.register(GoogleMaterialDesignIcons.getIconFont());
         initComponents();
-        drawUI();   
-        
-        this.setLocationRelativeTo(null);  
+        drawUI();
+
+        this.setLocationRelativeTo(null);
     }
-    
+
     public void setUser(String username, String id, ImageIcon avt) {
         this.lbIdentifier.setText(id);
         this.lbUser.setText(username);
         this.avatar.setIcon(avt);
     }
-    
+
     private void drawUI() {
-        
+
         for (Component c : this.menuSideBar.getComponents()) {
             if (c instanceof JToggleButton) {
                 menuItemGroup.add((JToggleButton) c);
                 MetroUI.apply((JToggleButton) c);
             }
         }
-        
+
         //menuItemGroup.setSelected(menuRoom.getModel(), true);
-        
         menuBill.setIcon(IconUtilities.ICON_BILL);
         menuFeature.setIcon(IconUtilities.ICON_FEATURES);
         menuRoom.setIcon(IconUtilities.ICON_ROOM);
@@ -76,31 +64,21 @@ public class MainFrame extends javax.swing.JFrame {
         menuUniversity.setIcon(IconUtilities.ICON_UNIVERSITY);
         menuBuilding.setIcon(IconUtilities.ICON_BUILDING);
 
-        
         this.repaint();
-        
-        
+
         displayPanel.setVisible(false);
         displayPanel.setLayout(new CardLayout());
-        
-        for (JPanel panel : panels) {
-            panel.add(panel);
-        }
+
+        this.add(RoomPanel.getInstance());
+        this.add(UniversityPanel.getInstance());
+        this.add(DepartmentPanel.getInstance());
+        this.add(EmployeePanel.getInstance());
+        this.add(StudentPanel.getInstance());
+        this.add(BillPanel.getInstance());
+        this.add(BuildingPanel.getInstance());
+
     }
-    
-    private void display(JPanel panel) {
-        if (panel == null) {
-            displayPanel.setVisible(false);
-            return;
-        }
-        
-        displayPanel.setVisible(true);
-        for (JPanel p : panels) {
-            p.setVisible(false);
-        }
-        panel.setVisible(true);
-    }
-    
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -366,39 +344,87 @@ public class MainFrame extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void menuBillActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuBillActionPerformed
-        this.display(BillPanel.getInstance());
+        RoomPanel.getInstance().setVisible(false);
+        UniversityPanel.getInstance().setVisible(false);
+        DepartmentPanel.getInstance().setVisible(false);
+        EmployeePanel.getInstance().setVisible(false);
+        StudentPanel.getInstance().setVisible(false);
+        BillPanel.getInstance().setVisible(false);
+        BuildingPanel.getInstance().setVisible(false);
     }//GEN-LAST:event_menuBillActionPerformed
 
     private void menuFeatureActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuFeatureActionPerformed
-        this.display(null);
+        RoomPanel.getInstance().setVisible(false);
+        UniversityPanel.getInstance().setVisible(false);
+        DepartmentPanel.getInstance().setVisible(false);
+        EmployeePanel.getInstance().setVisible(false);
+        StudentPanel.getInstance().setVisible(false);
+        BillPanel.getInstance().setVisible(false);
+        BuildingPanel.getInstance().setVisible(false);
     }//GEN-LAST:event_menuFeatureActionPerformed
 
     private void menuRoomActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuRoomActionPerformed
-        this.display(RoomPanel.getInstance());
+        RoomPanel.getInstance().setVisible(true);
+        UniversityPanel.getInstance().setVisible(false);
+        DepartmentPanel.getInstance().setVisible(false);
+        EmployeePanel.getInstance().setVisible(false);
+        StudentPanel.getInstance().setVisible(false);
+        BillPanel.getInstance().setVisible(false);
+        BuildingPanel.getInstance().setVisible(false);
     }//GEN-LAST:event_menuRoomActionPerformed
 
     private void menuStudentActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuStudentActionPerformed
-        this.display(StudentPanel.getInstance());
+        RoomPanel.getInstance().setVisible(false);
+        UniversityPanel.getInstance().setVisible(false);
+        DepartmentPanel.getInstance().setVisible(false);
+        EmployeePanel.getInstance().setVisible(false);
+        StudentPanel.getInstance().setVisible(true);
+        BillPanel.getInstance().setVisible(false);
+        BuildingPanel.getInstance().setVisible(false);
     }//GEN-LAST:event_menuStudentActionPerformed
 
     private void menuEmployeeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuEmployeeActionPerformed
-        this.display(EmployeePanel.getInstance());
+        RoomPanel.getInstance().setVisible(false);
+        UniversityPanel.getInstance().setVisible(false);
+        DepartmentPanel.getInstance().setVisible(false);
+        EmployeePanel.getInstance().setVisible(true);
+        StudentPanel.getInstance().setVisible(false);
+        BillPanel.getInstance().setVisible(false);
+        BuildingPanel.getInstance().setVisible(false);
     }//GEN-LAST:event_menuEmployeeActionPerformed
 
     private void menuBuildingActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuBuildingActionPerformed
-        this.display(BuildingPanel.getInstance());
+        RoomPanel.getInstance().setVisible(false);
+        UniversityPanel.getInstance().setVisible(false);
+        DepartmentPanel.getInstance().setVisible(false);
+        EmployeePanel.getInstance().setVisible(false);
+        StudentPanel.getInstance().setVisible(false);
+        BillPanel.getInstance().setVisible(false);
+        BuildingPanel.getInstance().setVisible(true);
     }//GEN-LAST:event_menuBuildingActionPerformed
 
     private void menuDepartmentActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuDepartmentActionPerformed
-        this.display(DepartmentPanel.getInstance());
+        RoomPanel.getInstance().setVisible(false);
+        UniversityPanel.getInstance().setVisible(false);
+        DepartmentPanel.getInstance().setVisible(true);
+        EmployeePanel.getInstance().setVisible(false);
+        StudentPanel.getInstance().setVisible(false);
+        BillPanel.getInstance().setVisible(false);
+        BuildingPanel.getInstance().setVisible(false);
     }//GEN-LAST:event_menuDepartmentActionPerformed
 
     private void menuUniversityActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuUniversityActionPerformed
-        this.display(UniversityPanel.getInstance());
+        RoomPanel.getInstance().setVisible(false);
+        UniversityPanel.getInstance().setVisible(true);
+        DepartmentPanel.getInstance().setVisible(false);
+        EmployeePanel.getInstance().setVisible(false);
+        StudentPanel.getInstance().setVisible(false);
+        BillPanel.getInstance().setVisible(false);
+        BuildingPanel.getInstance().setVisible(false);
     }//GEN-LAST:event_menuUniversityActionPerformed
 
     private void menuStatisticActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuStatisticActionPerformed
-        this.display(StatisticPanel.getInstance());
+        
     }//GEN-LAST:event_menuStatisticActionPerformed
 
     private void avatarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_avatarActionPerformed
@@ -424,7 +450,4 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JToggleButton menuUniversity;
     // End of variables declaration//GEN-END:variables
 
-    
-
-    
 }

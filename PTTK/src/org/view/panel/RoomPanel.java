@@ -2,7 +2,6 @@ package org.view.panel;
 
 import java.awt.TrayIcon;
 import java.util.ArrayList;
-import javax.swing.JPanel;
 import javax.swing.table.TableModel;
 import jiconfont.IconFontSwing;
 import jiconfont.icons.google_material_design_icons.GoogleMaterialDesignIcons;
@@ -12,18 +11,19 @@ import org.resources.MetroUI;
 import org.view.dialog.RoomDialog;
 import org.view.dialog.search.RoomSearchDialog;
 
-public class RoomPanel extends JPanel implements Panel {
+public class RoomPanel extends javax.swing.JPanel implements Panel {
  
-    private static final RoomPanel instace = new RoomPanel("Quản Lý Phòng Ở");
-    private static final String PLACEHOLDER = "Nhập mã phòng";
+    private static RoomPanel instance;
     
     public static RoomPanel getInstance() {
-        return instace;
+        if (instance == null) {
+            instance = new RoomPanel();
+        }
+        return instance;
     }
 
-    private RoomPanel(String title) {
+    private RoomPanel() {
         initComponents();
-        lbTitle.setText(title);
         drawUI();
         this.reloadTable();
     }
@@ -42,7 +42,7 @@ public class RoomPanel extends JPanel implements Panel {
         MetroUI.apply(btnDelete);
         MetroUI.apply(btnSearch);
         MetroUI.apply(btnReload);
-        MetroUI.apply(txtSearch, PLACEHOLDER);
+        MetroUI.apply(txtSearch, "Nhập mã phòng");
     }
     
     
@@ -83,7 +83,7 @@ public class RoomPanel extends JPanel implements Panel {
     @Override
     public void actionSearch() {
         // kiểm tra xem cái textfield có trống hay không
-        if (txtSearch.getText().equals(PLACEHOLDER)) {
+        if (txtSearch.getText().equals("Nhập mã phòng")) {
             this.requireFulfill();
             return;
         }

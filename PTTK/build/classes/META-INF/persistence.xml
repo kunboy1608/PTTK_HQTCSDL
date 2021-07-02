@@ -4,6 +4,8 @@
     <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
     <class>Model.Thongtincoban</class>
     <class>Model.PhongO</class>
+    <class>Model.Nhanvien</class>
+    <class>Model.Phongnhanvien</class>
     <properties>
       <property name="javax.persistence.jdbc.url" value="jdbc:oracle:thin:@localhost:1521:Test"/>
       <property name="javax.persistence.jdbc.user" value="hqtcsdl"/>

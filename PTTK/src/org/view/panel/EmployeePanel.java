@@ -14,16 +14,20 @@ import org.view.dialog.search.EmployeeSearchDialog;
 
 public class EmployeePanel extends JPanel implements Panel {
 
-    private static final EmployeePanel instace = new EmployeePanel("Quản Lý Nhân Viên");
+    
     private static final String PLACEHOLDER = "Nhập mã nhân viên";
 
+    private static EmployeePanel instance;
+    
     public static EmployeePanel getInstance() {
-        return instace;
+        if (instance == null) {
+            instance = new EmployeePanel();
+        }
+        return instance;
     }
 
-    private EmployeePanel(String title) {
+    private EmployeePanel() {
         initComponents();
-        lbTitle.setText(title);
         drawUI();
         this.reloadTable();
     }

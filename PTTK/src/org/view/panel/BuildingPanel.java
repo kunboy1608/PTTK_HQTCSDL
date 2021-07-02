@@ -13,16 +13,20 @@ import org.view.dialog.BuildingDialog;
 
 public class BuildingPanel extends JPanel implements Panel {
 
-    private static final BuildingPanel instace = new BuildingPanel("Quản Lý Tòa Nhà");
+    
     private static final String PLACEHOLDER = "Nhập mã tòa";
 
+     private static BuildingPanel instance;
+    
     public static BuildingPanel getInstance() {
-        return instace;
+        if (instance == null) {
+            instance = new BuildingPanel();
+        }
+        return instance;
     }
 
-    private BuildingPanel(String title) {
+    private BuildingPanel() {
         initComponents();
-        lbTitle.setText(title);
         drawUI();
         this.reloadTable();
     }
