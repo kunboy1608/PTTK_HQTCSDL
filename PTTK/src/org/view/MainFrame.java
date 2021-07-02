@@ -1,21 +1,30 @@
 package org.view;
 
 import java.awt.CardLayout;
-import java.awt.Color;
-import javax.swing.Icon;
+import java.awt.Component;
+import javax.swing.ImageIcon;
+import javax.swing.JPanel;
+import javax.swing.JToggleButton;
 import jiconfont.IconFontSwing;
 import jiconfont.icons.google_material_design_icons.GoogleMaterialDesignIcons;
+import org.resources.IconUtilities;
 import org.resources.MetroUI;
+import org.view.dialog.ChangePasswordDialog;
+import org.view.panel.*;
 
 public class MainFrame extends javax.swing.JFrame {
         
-    private Icon styleIcon = MetroUI.getGoogleIcon(MetroUI.icons.STYLE, 24, Color.WHITE);
-    private Icon otherIcon = MetroUI.getGoogleIcon(MetroUI.icons.REORDER, 24, Color.WHITE);
-    private Icon studentIcon = MetroUI.getGoogleIcon(MetroUI.icons.PEOPLE, 24, Color.WHITE);
-    private Icon staffIcon = MetroUI.getGoogleIcon(MetroUI.icons.VPN_KEY, 24, Color.WHITE);
-    private Icon roomIcon = MetroUI.getGoogleIcon(MetroUI.icons.LAYERS, 24, Color.WHITE);
-            
     private static final MainFrame INSTANCE = new MainFrame();
+    
+    private JPanel[] panels = new JPanel[]{
+        RoomPanel.getInstance(),
+        UniversityPanel.getInstance(),
+        DepartmentPanel.getInstance(),
+        EmployeePanel.getInstance(),
+        StudentPanel.getInstance(),
+        BillPanel.getInstance(),
+        BuildingPanel.getInstance()
+    };
     
     public static MainFrame getInstance() {
         return INSTANCE;
@@ -37,42 +46,59 @@ public class MainFrame extends javax.swing.JFrame {
         initComponents();
         drawUI();   
         
-        this.setLocationRelativeTo(null);
-        
+        this.setLocationRelativeTo(null);  
     }
     
-    public void setUser(String username, String id) {
+    public void setUser(String username, String id, ImageIcon avt) {
         this.lbIdentifier.setText(id);
         this.lbUser.setText(username);
+        this.avatar.setIcon(avt);
     }
     
     private void drawUI() {
-        menuItemGroup.add(menuBill);
-        menuItemGroup.add(menuFeature);
-        menuItemGroup.add(menuRoom);
-        menuItemGroup.add(menuEmployee);
-        menuItemGroup.add(menuStudent);
+        
+        for (Component c : this.menuSideBar.getComponents()) {
+            if (c instanceof JToggleButton) {
+                menuItemGroup.add((JToggleButton) c);
+                MetroUI.apply((JToggleButton) c);
+            }
+        }
+        
         //menuItemGroup.setSelected(menuRoom.getModel(), true);
         
-        menuBill.setIcon(styleIcon);
-        menuFeature.setIcon(otherIcon);
-        menuRoom.setIcon(roomIcon);
-        menuEmployee.setIcon(staffIcon);
-        menuStudent.setIcon(studentIcon);
+        menuBill.setIcon(IconUtilities.ICON_BILL);
+        menuFeature.setIcon(IconUtilities.ICON_FEATURES);
+        menuRoom.setIcon(IconUtilities.ICON_ROOM);
+        menuEmployee.setIcon(IconUtilities.ICON_STAFF);
+        menuStudent.setIcon(IconUtilities.ICON_STUDENT);
+        menuDepartment.setIcon(IconUtilities.ICON_DEPARTMENT);
+        menuStatistic.setIcon(IconUtilities.ICON_STATISTIC);
+        menuUniversity.setIcon(IconUtilities.ICON_UNIVERSITY);
+        menuBuilding.setIcon(IconUtilities.ICON_BUILDING);
+
         
-        MetroUI.apply(menuBill);
-        MetroUI.apply(menuFeature);
-        MetroUI.apply(menuRoom);
-        MetroUI.apply(menuEmployee);
-        MetroUI.apply(menuStudent);
+        this.repaint();
+        
         
         displayPanel.setVisible(false);
         displayPanel.setLayout(new CardLayout());
-        displayPanel.add(BillPanel.getInstance());
-        displayPanel.add(RoomPanel.getInstance());
-        displayPanel.add(StudentPanel.getInstance());
-        displayPanel.add(EmployeePanel.getInstance());
         
+        for (JPanel panel : panels) {
+            panel.add(panel);
+        }
+    }
+    
+    private void display(JPanel panel) {
+        if (panel == null) {
+            displayPanel.setVisible(false);
+            return;
+        }
+        
+        displayPanel.setVisible(true);
+        for (JPanel p : panels) {
+            p.setVisible(false);
+        }
+        panel.setVisible(true);
     }
     
     @SuppressWarnings("unchecked")
@@ -90,6 +116,10 @@ public class MainFrame extends javax.swing.JFrame {
         lbUser = new javax.swing.JLabel();
         avatar = new javax.swing.JButton();
         lbIdentifier = new javax.swing.JLabel();
+        menuBuilding = new javax.swing.JToggleButton();
+        menuDepartment = new javax.swing.JToggleButton();
+        menuUniversity = new javax.swing.JToggleButton();
+        menuStatistic = new javax.swing.JToggleButton();
         displayPanel = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -169,7 +199,13 @@ public class MainFrame extends javax.swing.JFrame {
         lbUser.setForeground(new java.awt.Color(255, 255, 255));
         lbUser.setText("Họ và Tên");
 
-        avatar.setText("Avt");
+        avatar.setBorderPainted(false);
+        avatar.setContentAreaFilled(false);
+        avatar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                avatarActionPerformed(evt);
+            }
+        });
 
         lbIdentifier.setBackground(new java.awt.Color(255, 255, 255));
         lbIdentifier.setForeground(new java.awt.Color(255, 255, 255));
@@ -180,13 +216,13 @@ public class MainFrame extends javax.swing.JFrame {
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addGap(20, 20, 20)
-                .addComponent(avatar, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(21, 21, 21)
+                .addComponent(avatar, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(20, 20, 20)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(lbUser)
                     .addComponent(lbIdentifier))
-                .addContainerGap(162, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -198,24 +234,76 @@ public class MainFrame extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(lbIdentifier, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(20, 20, 20)
-                        .addComponent(avatar, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(21, 21, 21)
+                        .addComponent(avatar, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(20, 20, 20))
         );
+
+        menuBuilding.setBackground(new java.awt.Color(51, 51, 51));
+        menuBuilding.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        menuBuilding.setForeground(new java.awt.Color(255, 255, 255));
+        menuBuilding.setText("Quản lý Tòa");
+        menuBuilding.setBorder(null);
+        menuBuilding.setContentAreaFilled(false);
+        menuBuilding.setFocusCycleRoot(true);
+        menuBuilding.setFocusPainted(false);
+        menuBuilding.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuBuildingActionPerformed(evt);
+            }
+        });
+
+        menuDepartment.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        menuDepartment.setForeground(new java.awt.Color(255, 255, 255));
+        menuDepartment.setText("Quản lý Phòng Ban");
+        menuDepartment.setContentAreaFilled(false);
+        menuDepartment.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuDepartmentActionPerformed(evt);
+            }
+        });
+
+        menuUniversity.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        menuUniversity.setForeground(new java.awt.Color(255, 255, 255));
+        menuUniversity.setText("Quản Lý Trường");
+        menuUniversity.setContentAreaFilled(false);
+        menuUniversity.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuUniversityActionPerformed(evt);
+            }
+        });
+
+        menuStatistic.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        menuStatistic.setForeground(new java.awt.Color(255, 255, 255));
+        menuStatistic.setText("Thống Kê");
+        menuStatistic.setContentAreaFilled(false);
+        menuStatistic.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuStatisticActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout menuSideBarLayout = new javax.swing.GroupLayout(menuSideBar);
         menuSideBar.setLayout(menuSideBarLayout);
         menuSideBarLayout.setHorizontalGroup(
             menuSideBarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(menuFeature, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addGroup(menuSideBarLayout.createSequentialGroup()
-                .addComponent(menuRoom, javax.swing.GroupLayout.DEFAULT_SIZE, 350, Short.MAX_VALUE)
-                .addGap(2, 2, 2))
-            .addComponent(menuBill, javax.swing.GroupLayout.DEFAULT_SIZE, 350, Short.MAX_VALUE)
+            .addComponent(menuBill, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(menuEmployee, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(menuStudent, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(menuSideBarLayout.createSequentialGroup()
+                .addGroup(menuSideBarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(menuBuilding, javax.swing.GroupLayout.PREFERRED_SIZE, 364, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(menuDepartment)
+                    .addComponent(menuUniversity)
+                    .addComponent(menuStatistic))
+                .addGap(0, 0, Short.MAX_VALUE))
+            .addComponent(menuRoom, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
+
+        menuSideBarLayout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {menuBuilding, menuDepartment, menuStatistic, menuUniversity});
+
         menuSideBarLayout.setVerticalGroup(
             menuSideBarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(menuSideBarLayout.createSequentialGroup()
@@ -225,15 +313,25 @@ public class MainFrame extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(menuStudent)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(menuEmployee)
+                .addComponent(menuEmployee, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(menuBill, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(menuBuilding, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(menuDepartment)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(menuUniversity)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(menuStatistic)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(menuFeature, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(464, Short.MAX_VALUE))
+                .addContainerGap(264, Short.MAX_VALUE))
         );
 
-        menuSideBarLayout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {menuBill, menuEmployee, menuRoom, menuStudent});
+        menuSideBarLayout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {menuBill, menuRoom, menuStudent});
+
+        menuSideBarLayout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {menuBuilding, menuDepartment, menuStatistic, menuUniversity});
 
         displayPanel.setBackground(new java.awt.Color(255, 255, 255));
 
@@ -241,7 +339,7 @@ public class MainFrame extends javax.swing.JFrame {
         displayPanel.setLayout(displayPanelLayout);
         displayPanelLayout.setHorizontalGroup(
             displayPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 951, Short.MAX_VALUE)
+            .addGap(0, 932, Short.MAX_VALUE)
         );
         displayPanelLayout.setVerticalGroup(
             displayPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -255,7 +353,8 @@ public class MainFrame extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addComponent(menuSideBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, 0)
-                .addComponent(displayPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(displayPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(0, 0, 0))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -267,44 +366,44 @@ public class MainFrame extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void menuBillActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuBillActionPerformed
-        displayPanel.setVisible(true);
-            BillPanel.getInstance().setVisible(true);
-        RoomPanel.getInstance().setVisible(false);
-        EmployeePanel.getInstance().setVisible(false);
-        StudentPanel.getInstance().setVisible(false);
+        this.display(BillPanel.getInstance());
     }//GEN-LAST:event_menuBillActionPerformed
 
     private void menuFeatureActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuFeatureActionPerformed
-        displayPanel.setVisible(false);
-        BillPanel.getInstance().setVisible(false);
-        RoomPanel.getInstance().setVisible(false);
-        EmployeePanel.getInstance().setVisible(false);
-        StudentPanel.getInstance().setVisible(false);
+        this.display(null);
     }//GEN-LAST:event_menuFeatureActionPerformed
 
     private void menuRoomActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuRoomActionPerformed
-        displayPanel.setVisible(true);
-        BillPanel.getInstance().setVisible(false);
-            RoomPanel.getInstance().setVisible(true);
-        EmployeePanel.getInstance().setVisible(false);
-        StudentPanel.getInstance().setVisible(false);
+        this.display(RoomPanel.getInstance());
     }//GEN-LAST:event_menuRoomActionPerformed
 
     private void menuStudentActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuStudentActionPerformed
-        displayPanel.setVisible(true);
-        BillPanel.getInstance().setVisible(false);
-        RoomPanel.getInstance().setVisible(false);
-        EmployeePanel.getInstance().setVisible(false);
-            StudentPanel.getInstance().setVisible(true);
+        this.display(StudentPanel.getInstance());
     }//GEN-LAST:event_menuStudentActionPerformed
 
     private void menuEmployeeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuEmployeeActionPerformed
-        displayPanel.setVisible(true);
-        BillPanel.getInstance().setVisible(false);
-        RoomPanel.getInstance().setVisible(false);
-            EmployeePanel.getInstance().setVisible(true);
-        StudentPanel.getInstance().setVisible(false);
+        this.display(EmployeePanel.getInstance());
     }//GEN-LAST:event_menuEmployeeActionPerformed
+
+    private void menuBuildingActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuBuildingActionPerformed
+        this.display(BuildingPanel.getInstance());
+    }//GEN-LAST:event_menuBuildingActionPerformed
+
+    private void menuDepartmentActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuDepartmentActionPerformed
+        this.display(DepartmentPanel.getInstance());
+    }//GEN-LAST:event_menuDepartmentActionPerformed
+
+    private void menuUniversityActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuUniversityActionPerformed
+        this.display(UniversityPanel.getInstance());
+    }//GEN-LAST:event_menuUniversityActionPerformed
+
+    private void menuStatisticActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuStatisticActionPerformed
+        this.display(StatisticPanel.getInstance());
+    }//GEN-LAST:event_menuStatisticActionPerformed
+
+    private void avatarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_avatarActionPerformed
+        new ChangePasswordDialog().setVisible(true);
+    }//GEN-LAST:event_avatarActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton avatar;
@@ -313,11 +412,19 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JLabel lbIdentifier;
     private javax.swing.JLabel lbUser;
     private javax.swing.JToggleButton menuBill;
+    private javax.swing.JToggleButton menuBuilding;
+    private javax.swing.JToggleButton menuDepartment;
     private javax.swing.JToggleButton menuEmployee;
     private javax.swing.JToggleButton menuFeature;
     private javax.swing.ButtonGroup menuItemGroup;
     private javax.swing.JToggleButton menuRoom;
     private javax.swing.JPanel menuSideBar;
+    private javax.swing.JToggleButton menuStatistic;
     private javax.swing.JToggleButton menuStudent;
+    private javax.swing.JToggleButton menuUniversity;
     // End of variables declaration//GEN-END:variables
+
+    
+
+    
 }

@@ -1,50 +1,144 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.controller;
 
-/**
- *
- * @author kunbo
- */
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.swing.table.DefaultTableModel;
+import org.model.*;
 
 public class RoomManageController {
 
     private static DefaultTableModel model = null;
     private static DefaultTableModel filterModel = null; // Để lưu kết quả tìm kiếm
+    private static ArrayList<Room> arr = null;
 
     public static DefaultTableModel getModel() {
         return model;
     }
 
-    // Cơ sở dữ liệu sẽ lưu mã phòng dạng <Số phòng> + <Mã tòa>. Ví dụ: 123A3
-    // Hàm numRoom có nhiệm vụ tách lấy phần số phòng
-    private static String numRoom(String IDRoom, String IDBuilding) {
-        char[] ch = new char[IDRoom.length()];
-        // Lấy số phòng (kiểu dữ liệu char[])
-        IDRoom.getChars(0, IDRoom.indexOf(IDBuilding), ch, 0);
-
-        // Chuyển char[] thành String
-        String numRoom = "";
-        for (char c : ch) {
-            numRoom += c;
+    public static int getCapacity(String numRoom, String IDBuilding) {
+        try {
+            numRoom = numRoom.trim();
+            IDBuilding = IDBuilding.trim();
+            Statement stmt = User.getConnection().createStatement();
+            String sql = "Select SoNguoiO from hqtcsdl.PhongO where IDPhongO='"
+                    + numRoom + IDBuilding + "')";
+            ResultSet rs = stmt.executeQuery(sql);
+            while (rs.next()) {
+                return rs.getInt("SONGUOIO");
+            }
+            return 0;
+        } catch (SQLException e) {
+            System.out.println("Lỗi lấy số người ở");
+            return 0;
         }
-        return numRoom;
     }
 
-    public static void initialModel() throws SQLException {
+    public static ArrayList<String> getListNumRoomEmpty(String IDBuilding) {
+        try {
+            ArrayList<String> a = new ArrayList<>();
+            String sql = "Select IDPhongO from hqtcsdl.PhongO "
+                    + "Where (IDtoa='"
+                    + IDBuilding.trim() + "' "
+                    + "and ConTrong !=0 )";
+            Statement stmt = User.getConnection().createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
+            String temp;
+            while (rs.next()) {
+                temp = rs.getString("IDPHONGO");
+                temp = temp.trim();
+                Matcher matcher = Pattern.compile("(?:[A-Z]+)").matcher(temp);
+                if (!matcher.find()) {
+                    throw new NullPointerException("Wrong Format");
+                }
+                a.add(temp.substring(0, matcher.start()));
+            }
+            return a;
+        } catch (SQLException e) {
+            System.out.println("Lỗi truy vấn ở lấy danh sách phòng");
+            return null;
+        }
+    }
 
+    public static ArrayList<String> getListNumRoom(String IDBuilding) {
+        try {
+            ArrayList<String> a = new ArrayList<>();
+            String sql = "Select IDPhongO from hqtcsdl.PhongO "
+                    + "Where (IDtoa='"
+                    + IDBuilding.trim() + "')";
+            Statement stmt = User.getConnection().createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
+            String temp;
+            while (rs.next()) {
+                temp = rs.getString("IDPHONGO");
+                temp = temp.trim();
+                Matcher matcher = Pattern.compile("(?:[A-Z]+)").matcher(temp);
+                if (!matcher.find()) {
+                    throw new NullPointerException("Wrong Format");
+                }
+                a.add(temp.substring(0, matcher.start()));
+            }
+            return a;
+        } catch (SQLException e) {
+            System.out.println("Lỗi truy vấn ở lấy danh sách phòng");
+            return null;
+        }
+    }
+
+    public static ArrayList<String> getListNumRoom() {
+        try {
+            ArrayList<String> a = new ArrayList<>();
+            String sql = "Select IDPhongO from hqtcsdl.PhongO ";
+            Statement stmt = User.getConnection().createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
+            String temp;
+            while (rs.next()) {
+                temp = rs.getString("IDPHONGO");
+                temp = temp.trim();
+                Matcher matcher = Pattern.compile("(?:[A-Z]+)").matcher(temp);
+                if (!matcher.find()) {
+                    throw new NullPointerException("Wrong Format");
+                }
+                a.add(temp.substring(0, matcher.start()));
+            }
+            return a;
+        } catch (SQLException e) {
+            System.out.println("Lỗi truy vấn ở lấy danh sách phòng");
+            return null;
+        }
+    }
+
+    public static void initialData() {
+        try {
+            arr = new ArrayList<>();
+            Statement stmt = User.getConnection().createStatement();
+            ResultSet rs = stmt.executeQuery("Select * From HQTCSDL.PHONGO");
+
+            while (rs.next()) {
+                Room r = new Room();
+                r.setIDBuilding(rs.getString("IDTOA"));
+                r.setIDRoom(rs.getString("IDPHONGO"));
+                r.setFacilities(rs.getString("COSOVATCHAT"));
+                r.setKind(rs.getString("LOAIPHONG"));
+                r.setCapacity(rs.getInt("SONGUOIO"));
+                r.setRemain(rs.getInt("CONTRONG"));
+                arr.add(r);
+            }
+        } catch (SQLException e) {
+            System.out.println("Lỗi truy vấn ở Phòng ở");
+            e.printStackTrace();
+        }
+    }
+
+    public static void initialModel() {
         model = new DefaultTableModel(new Object[]{
             " ",
-            "Mã phòng",
-            "Tòa",
+            "Mã tòa",
+            "Số phòng",
             "Cơ sở vật chất",
             "Loại phòng",
             "Số ngưởi ở",
@@ -65,159 +159,88 @@ public class RoomManageController {
 
             @Override
             public boolean isCellEditable(int row, int column) {
-                if (column == 0) {
-                    return true;
-                }
-                return false;
+                return column == 0;
             }
         };
-
-        Statement stmt = DatabaseController.getConnection().createStatement();
-        ResultSet rs = stmt.executeQuery("Select * From HQTCSDL.PHONGO");
-
-        while (rs.next()) {
-            model.addRow(new Object[]{
-                false,
-                numRoom(rs.getString("IDPHONGO").trim(), rs.getString("IDTOA").trim()),
-                rs.getString("IDTOA").trim(),
-                rs.getString("COSOVATCHAT").trim(),
-                rs.getString("LOAIPHONG").trim(),
-                rs.getInt("SONGUOIO"),
-                rs.getInt("CONTRONG")
-            });
-        }
-    }
-
-    private static void addRowToModel(
-            String txtNumRoom,
-            String txtIDBuilding,
-            String txtValue,
-            String txtKind,
-            String txtStatus) {
-        model.addRow(new Object[]{
-            false,
-            txtNumRoom,
-            txtIDBuilding,
-            txtValue,
-            txtKind,
-            0, // Số người ở. Vì phòng mới tạo nên mặc dịnh chưa có người ở
-            txtStatus
+        arr.forEach(r -> {
+            model.addRow(r.toObject());
         });
-
-        // Nếu đang trạng thái tìm kiếm thì cũng thêm vào để người dùng còn nhân ra là đã thêm
-        if (filterModel != null) {
-            filterModel.addRow(new Object[]{
-                txtNumRoom,
-                txtIDBuilding,
-                txtValue,
-                txtKind,
-                0, // Số người ở. Vì phòng mới tạo nên mặc dịnh chưa có người ở
-                txtStatus,});
-        }
     }
 
-    private static void removeRowFromModel(String numRoom, String IDBuilding) {
-        // Chuỗi truyền vào 99,99% là đúng nên có thể dùng hàm só sánh gần đúng
-        for (int i = 0; i < model.getRowCount(); i++) {
-            if (compareCloseTo(model.getValueAt(i, 1).toString(), numRoom)
-                    && compareCloseTo(model.getValueAt(i, 2).toString(), IDBuilding)) {
-                model.removeRow(i);
-
-                // Nếu đang trạng thái tìm kiếm thì cũng xóa ở cả kết quả tìm kiếm luôn
-                if (filterModel == null) {
-                    return;
-                } else {
-                    for (int j = 0; j < filterModel.getRowCount(); j++) {
-                        if (compareCloseTo(filterModel.getValueAt(j, 1).toString(), numRoom)
-                                && compareCloseTo(filterModel.getValueAt(j, 2).toString(), IDBuilding)) {
-                            filterModel.removeRow(j);
-                            return;
-                        }
-                    }
-                }
+    public static Room showFullInfo(String numRoom, String IDBuilding) {
+        initialData();
+        numRoom = numRoom.trim();
+        IDBuilding = IDBuilding.trim();
+        for (Room r : arr) {
+            if (r.getIDBuilding().equals(IDBuilding)
+                    && r.getNumRoom().equals(numRoom)) {
+                return r;
             }
         }
+        return null;
     }
 
-    public static boolean insData(
-            String txtNumRoom,
-            String txtIDBuilding,
-            String txtValue,
-            String txtKind,
-            String txtStatus) {
+    public static boolean insData(Room r) {
         try {
-            String sql = "Insert into hqtcsdl.PhongO values(?,?,?,?,0,?)";
-            txtIDBuilding = txtIDBuilding.toUpperCase();
-            PreparedStatement ps = DatabaseController.getConnection().prepareStatement(sql);
+            String sql = "Insert into hqtcsdl.PhongO values(?,?,?,?,?,?)";
+            PreparedStatement ps = User.getConnection().prepareStatement(sql);
 
-            ps.setString(1, txtNumRoom.concat(txtIDBuilding));
-            ps.setString(2, txtIDBuilding);
-            ps.setString(3, txtValue);
-            ps.setString(4, txtKind);
-            ps.setString(5, txtStatus);
+            ps.setString(1, r.getIDRoom());
+            ps.setString(2, r.getIDBuilding());
+            ps.setString(3, r.getFacilities());
+            ps.setString(4, r.getKind());
+            ps.setInt(5, r.getCapacity());
+            // Lúc đầu mới thêm phòng thì chưa có người ở nên trống toàn bô
+            ps.setInt(6, r.getCapacity());
 
-            if (ps.executeUpdate() == 1) {
-                addRowToModel(txtNumRoom, txtIDBuilding, txtValue, txtKind, txtStatus);
-                return true;
+            if (ps.executeUpdate() != 1) {
+                return false;
             }
+            return true;
         } catch (java.sql.SQLException e) {
             e.printStackTrace();
             return false;
         }
 
-        return false;
     }
 
     public static boolean delData(String numRoom, String IDBuilding) {
         try {
             String sql = "Delete From hqtcsdl.PhongO "
                     + "Where (IDPhongO = '"
-                    + numRoom + IDBuilding
+                    + numRoom.trim() + IDBuilding.trim()
                     + "')";
-            PreparedStatement ps = DatabaseController.getConnection().prepareStatement(sql);
-            if (ps.executeUpdate() == 1) {
-                removeRowFromModel(numRoom, IDBuilding);
-                return true;
+            System.out.println(sql);
+            PreparedStatement ps = User.getConnection().prepareStatement(sql);
+            if (ps.executeUpdate() != 1) {
+                return false;
             }
-
+            return true;
         } catch (SQLException e) {
             return false;
         }
-        // Return chỗ này cho nó khỏi báo lỗi thôi
-        return true;
     }
 
-    public static boolean updateData(
-            String txtNumRoom,
-            String txtIDBuilding,
-            String txtValue,
-            String txtKind,
-            String txtStatus) {
+    public static boolean updateData(Room r) {
         try {
-            txtIDBuilding = txtIDBuilding.toUpperCase();
             String sql = "Update hqtcsdl.PhongO set"
-                    + " IDToa = '" + txtIDBuilding
-                    + "', CoSoVatChat = '" + txtValue
-                    + "', LoaiPhong = '" + txtKind
-                    + "', TrangThai = " + txtStatus
+                    + "', CoSoVatChat = '" + r.getFacilities()
+                    + "', LoaiPhong = '" + r.getKind()
+                    + "', SoNguoiO = " + r.getCapacity()
                     + " Where (IDPhongO = '"
-                    + txtNumRoom + txtIDBuilding
+                    + r.getIDRoom()
                     + "')";
+            System.out.println(sql);
+            PreparedStatement ps = User.getConnection().prepareStatement(sql);
 
-            PreparedStatement ps = DatabaseController.getConnection().prepareStatement(sql);
-
-            if (ps.executeUpdate() == 1) {
-                // Xóa cột cũ trong model
-                removeRowFromModel(txtNumRoom, txtIDBuilding);
-                // Thêm cột mới vào model
-                addRowToModel(txtNumRoom, txtIDBuilding, txtValue, txtKind, txtStatus);
-                return true;
+            if (ps.executeUpdate() != 1) {
+                return false;
             }
+            return true;
         } catch (java.sql.SQLException e) {
             e.printStackTrace();
             return false;
         }
-        return false;
     }
 
     // Do không tìm được hàm nào so sánh phù hợp nên viết lại luôn
@@ -243,15 +266,15 @@ public class RoomManageController {
     public static void searchData(
             String txtNumRoom,
             String txtIDBuilding,
-            String txtValue,
+            String txtFacilities,
             String txtKind,
-            String txtNumber,
-            String txtStatus) {
+            String txtCapacity,
+            String txtRemain) {
         // Tạo mới model để lưu kết quả tìm được
         filterModel = new DefaultTableModel(new Object[]{
             " ",
-            "Mã phòng",
-            "Tòa",
+            "Mã tòa",
+            "Số phòng",
             "Cơ sở vật chất",
             "Loại phòng",
             "Số ngưởi ở",
@@ -272,20 +295,17 @@ public class RoomManageController {
 
             @Override
             public boolean isCellEditable(int row, int column) {
-                if (column == 0) {
-                    return true;
-                }
-                return false;
+                return column == 0;
             }
         };
 
         for (int i = 0; i < model.getRowCount(); i++) {
             if (compareCloseTo(txtNumRoom, model.getValueAt(i, 1).toString())
                     && compareCloseTo(txtIDBuilding, model.getValueAt(i, 2).toString())
-                    && compareCloseTo(txtValue, model.getValueAt(i, 3).toString())
+                    && compareCloseTo(txtFacilities, model.getValueAt(i, 3).toString())
                     && compareCloseTo(txtKind, model.getValueAt(i, 4).toString())
-                    && compareCloseTo(txtNumber, model.getValueAt(i, 5).toString())
-                    && compareCloseTo(txtStatus, model.getValueAt(i, 6).toString())) {
+                    && compareCloseTo(txtCapacity, model.getValueAt(i, 5).toString())
+                    && compareCloseTo(txtRemain, model.getValueAt(i, 6).toString())) {
                 filterModel.addRow(new Object[]{
                     true,
                     model.getValueAt(i, 1).toString(),

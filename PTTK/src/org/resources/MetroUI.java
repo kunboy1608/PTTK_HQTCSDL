@@ -66,6 +66,13 @@ public class MetroUI {
                );
     }
     
+    public static Border getBorder(Color lineColor, int width, int padding) {
+        return BorderFactory.createCompoundBorder(
+                    BorderFactory.createLineBorder(lineColor, width),
+                    BorderFactory.createEmptyBorder(1, padding, 1, padding)
+        );
+    }
+    
     public static void applySpecilized(JButton b) {
         Dimension bd = b.getSize();
         Point bp = b.getLocation();

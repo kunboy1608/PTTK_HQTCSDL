@@ -1,113 +1,136 @@
-
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates Hoang Dinh Phu 19520838
+ * and open the template in the editor.
+ */
 package org.model;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ *
+ * @author kunbo
+ */
 public class Room {
 
-    private String roomId;
-    private String building;
-    private String facility;
-    private Integer roomType;
-    private Integer status;
-    private Integer roomCapacity;
-    private Integer roomCurrent;
+    String IDRoom;
+    String numRoom;
+    String IDBuilding;
+    String facilities;
+    String kind;
+    int capacity;
+    int remain;
 
-    public Room() {}
-    
-    public Room(String roomId, String building, String facility, Integer roomType,
-                Integer status, Integer roomCapacity) {
-        this.roomId = roomId;
-        this.building = building;
-        this.facility = facility;
-        this.roomType = roomType;
-        this.status = status;
-        this.roomCapacity = roomCapacity;
+    public Room() {
+        this.IDRoom = "";
+        this.IDBuilding = "";
+        this.numRoom = "";
+        this.facilities = "";
+        this.kind = "";
+        this.capacity = 0;
+        this.remain = 0;
     }
 
-    public String getRoomId() {
-        return roomId;
+    public Object[] toObject() {
+        return new Object[]{
+            false,
+            IDBuilding,
+            numRoom,
+            facilities,
+            kind,
+            capacity,
+            remain
+        };
     }
 
-    public void setRoomId(String roomId) {
-        this.roomId = roomId;
+    public String getIDRoom() {
+        return IDRoom;
     }
 
-    public String getBuilding() {
-        return building;
-    }
-
-    public void setBuilding(String building) {
-        this.building = building;
-    }
-
-    public String getFacility() {
-        return facility;
-    }
-
-    public void setFacility(String facility) {
-        this.facility = facility;
-    }
-
-    public Integer getRoomType() {
-        return roomType;
-    }
-
-    public void setRoomType(Integer roomType) {
-        this.roomType = roomType;
-    }
-
-    public Integer getStatus() {
-        return status;
-    }
-
-    public void setStatus(Integer status) {
-        this.status = status;
-    }
-
-    public Integer getRoomCapacity() {
-        return roomCapacity;
-    }
-
-    public void setRoomCapacity(Integer roomCapacity) {
-        this.roomCapacity = roomCapacity;
-    }
-    
-    public String getRoomRatio() {
-        return (roomCurrent + "/" + roomCurrent);
-    }
-    
-    public Integer getRoomCurrent() {
-        return this.roomCurrent;
-    }
-    
-    public void setRoomCurrent(Integer current) {
-        this.roomCurrent = current;
-    }
-    
-    public void setRoomRatio(String ratio) {
-        if (ratio.contains("/")) {
-            this.roomCurrent = Integer.valueOf(ratio.split("/")[0]);
-            this.roomCapacity = Integer.valueOf(ratio.split("/")[1]);
-        } else {
-            this.roomCapacity = Integer.valueOf(ratio);
-            this.roomCurrent = 0;
+    public void setIDRoom(String IDRoom) {
+        if (IDRoom == null) {
+            return;
         }
-    }
-    
-    public void setRoomAndBuilding(String storagePattern) {
-        Matcher matcher = Pattern.compile("(?:[A-Z]+)").matcher(storagePattern);
+        this.IDRoom = IDRoom.trim();
+        Matcher matcher = Pattern.compile("(?:[A-Z]+)").matcher(this.IDRoom);
         if (!matcher.find()) {
             throw new NullPointerException("Wrong Format");
         }
-        int location = matcher.start();
-        this.setRoomId(storagePattern.substring(0, location));
-        this.setBuilding(storagePattern.substring(location));
+        this.numRoom = this.IDRoom.substring(0, matcher.start());
     }
-    
-    public String getRoomAndBuilding() {
-        return this.getRoomId() + this.getBuilding();
+
+    public void setIDRoom(String numRoom, String IDBuilding) {
+        if (numRoom == null || IDBuilding == null) {
+            return;
+        }
+        this.IDRoom = numRoom.trim() + IDBuilding.trim().toUpperCase();
     }
-    
+
+    public String getNumRoom() {
+        return numRoom;
+    }
+
+    public String getIDBuilding() {
+        return IDBuilding;
+    }
+
+    public void setIDBuilding(String IDBuilding) {
+        if (IDBuilding == null) {
+            return;
+        }
+        this.IDBuilding = IDBuilding.trim();
+    }
+
+    public String getFacilities() {
+        return facilities;
+    }
+
+    public void setFacilities(String facilities) {
+        if (facilities == null) {
+            return;
+        }
+        this.facilities = facilities.trim();
+    }
+
+    public String getKind() {
+        return kind;
+    }
+
+    public void setKind(String kind) {
+        if (kind == null) {
+            return;
+        }
+        this.kind = kind.trim();
+    }
+
+    public int getCapacity() {
+        return capacity;
+    }
+
+    public void setCapacity(int capacity) {
+        this.capacity = capacity;
+    }
+
+    public void setCapacity(String capacity) {
+        if (capacity == null) {
+            return;
+        }
+        this.capacity = Integer.parseInt(capacity.trim());
+    }
+
+    public int getRemain() {
+        return remain;
+    }
+
+    public void setRemain(int remain) {
+        this.remain = remain;
+    }
+
+    public void setRemain(String remain) {
+        if (remain == null) {
+            return;
+        }
+        this.remain = Integer.parseInt(remain.trim());
+    }
 }

@@ -11,53 +11,59 @@ package org.model;
  */
 public class Department {
 
-    String departmentId;
-    String managerId;
-    String name;
+    String IDDepartment;
+    String IDManager;
+    String Name;
     String location;
 
     public Department() {
+        this.IDDepartment = "";
+        this.IDManager = "";
+        this.Name = "";
+        this.location = "";
     }
 
-    public Department(String departmentId, String managerId, String name, String location) {
-        this.departmentId = departmentId;
-        this.managerId = managerId;
-        this.name = name;
-        this.location = location;
-    }
-    
     public Object[] toObject(boolean b) {
         return new Object[]{
             b,
-            departmentId,
-            managerId,
-            name,
+            IDDepartment,
+            IDManager,
+            Name,
             location
         };
     }
 
-    public String getId() {
-        return departmentId;
+    public String getIDDepartment() {
+        return IDDepartment;
     }
 
-    public void setId(String IDDepartment) {
-        this.departmentId = IDDepartment;
+    public void setIDDepartment(String IDDepartment) {
+        if (null == IDDepartment) {
+            return;
+        }
+        this.IDDepartment = IDDepartment.trim();
     }
 
-    public String getManagerId() {
-        return managerId;
+    public String getIDManager() {
+        return IDManager;
     }
 
-    public void setManagerId(String IDManager) {
-        this.managerId = IDManager;
+    public void setIDManager(String IDManager) {
+        if (null == IDManager) {
+            return;
+        }
+        this.IDManager = IDManager.trim();
     }
 
     public String getName() {
-        return name;
+        return Name;
     }
 
     public void setName(String Name) {
-        this.name = Name;
+        if (null == Name) {
+            return;
+        }
+        this.Name = Name.trim();
     }
 
     public String getLocation() {
@@ -65,7 +71,10 @@ public class Department {
     }
 
     public void setLocation(String location) {
-        this.location = location;
+        if (null == location) {
+            return;
+        }
+        this.location = location.trim();
     }
 
 }

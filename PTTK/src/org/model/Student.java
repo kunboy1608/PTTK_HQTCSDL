@@ -1,62 +1,124 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package org.model;
 
 import java.awt.Image;
-import java.time.LocalDate;
+import java.util.Date;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+/**
+ *
+ * @author kunbo
+ */
 public class Student {
+    String ID;
+    String Surname;
+    String Name;
+    String address;
+    String Sex;
+    Date birthday;
+    String phoneNumber;
+    String Email;
+    String IDCard;
+    String nationality;
+    String nation;
+    String BHYT;
+    String personalName;
+    String phonePersonal;
+    String addressPersonal;
+    Image Avatar;
 
-    private String surname;
-    private String name;
-    private String address;
-    private String sex;
-    private LocalDate birthday;
-    private String phoneNumber;
-    private String email;
-    private String cardId;
-    private String nationality;
-    private String nation;
-    private String bhyt;
-    private Image Avatar;
+    String IDStudent;
+    String IDRoom;
+    String numRoom;
+    String IDBuilding;
+    String IDSchool;
+    Date comeDate;
+    Date expDate;
+    int status;
 
-    private String studentId;
-    private String university;
-    private String room;
-    private LocalDate comeDate;
-    private LocalDate expDate;
-    private int status;
-    
-    private String personalName;
-    private String phonePersonal;
-    private String addressPersonal;
-    
-    public Object[] toProperties() {
+    public Student() {
+        this.ID = "";
+        this.Surname = "";
+        this.Name = "";
+        this.address = "";
+        this.Sex = "";
+        this.phoneNumber = "";
+        this.Email = "";
+        this.IDCard = "";
+        this.nationality = "";
+        this.nation = "";
+        this.BHYT = "";
+        this.personalName = "";
+        this.phonePersonal = "";
+        this.addressPersonal = "";
+        this.Avatar = null;
+        this.IDStudent = "";
+        this.IDRoom = "";
+        this.numRoom = "";
+        this.IDBuilding = "";
+        this.IDSchool = "";
+        int status = 0;
+    }
+
+    public Object[] toObject(boolean b) {
         return new Object[]{
-            studentId,
-            surname,
-            name,
-            sex,
-            room,
-            cardId,
-            university,
+            b,
+            IDStudent,
+            Surname,
+            Name,
+            Sex,
+            IDRoom,
+            IDCard,
+            IDSchool,
             expDate,
             address
         };
     }
 
-    public String getSurname() {
-        return surname;
+    public String getID() {
+        return ID;
     }
 
-    public void setSurname(String surname) {
-        this.surname = surname;
+    public String getNumRoom() {
+        return numRoom;
+    }
+
+    public String getIDBuilding() {
+        return IDBuilding;
+    }
+
+    public void setID(String ID) {
+        if (ID == null) {
+            return;
+        }
+        this.ID = ID.trim();
+    }
+
+    public String getSurname() {
+        return Surname;
+    }
+
+    public void setSurname(String Surname) {
+        if (Surname == null) {
+            return;
+        }
+        this.Surname = Surname.trim();
     }
 
     public String getName() {
-        return name;
+        return Name;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setName(String Name) {
+        if (Name == null) {
+            return;
+        }
+        this.Name = Name.trim();
     }
 
     public String getAddress() {
@@ -64,36 +126,46 @@ public class Student {
     }
 
     public void setAddress(String address) {
-        this.address = address;
+        if (address == null) {
+            return;
+        }
+        this.address = address.trim();
     }
 
     public String getSex() {
-        return sex;
+        return Sex;
     }
-    
-    public int getSexCode() {
-        return this.sex.equals("Nam")
-                    ? 0
-                    : this.sex.equals("Nữ")
-                            ? 1
-                            : 2;
+
+    public int getSexInt() {
+        if (this.Sex == "Nam") {
+            return 0;
+        } else {
+            return 1;
+        }
+    }
+
+    public void setSex(int s) {
+        if (s == 0) {
+            this.Sex = "Nam";
+        } else if (s == 1) {
+            this.Sex = "Nữ";
+        } else {
+            this.Sex = "Khác";
+        }
     }
 
     public void setSex(String sex) {
-        this.sex = sex;
-    }
-    
-    public void setSex(int sexCode) {
-        this.sex = (sexCode == 0) ? "Nam"
-                                  : (sexCode == 1) ? "Nữ"
-                                                   : "Khác";
+        if (sex == null) {
+            return;
+        }
+        this.Sex = sex.trim();
     }
 
-    public LocalDate getBirthday() {
+    public Date getBirthday() {
         return birthday;
     }
 
-    public void setBirthday(LocalDate birthday) {
+    public void setBirthday(Date birthday) {
         this.birthday = birthday;
     }
 
@@ -102,23 +174,32 @@ public class Student {
     }
 
     public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
+        if (phoneNumber == null) {
+            return;
+        }
+        this.phoneNumber = phoneNumber.trim();
     }
 
     public String getEmail() {
-        return email;
+        return Email;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setEmail(String Email) {
+        if (Email == null) {
+            return;
+        }
+        this.Email = Email.trim();
     }
 
-    public String getCardId() {
-        return cardId;
+    public String getIDCard() {
+        return IDCard;
     }
 
-    public void setCardId(String cardId) {
-        this.cardId = cardId;
+    public void setIDCard(String IDCard) {
+        if (IDCard == null) {
+            return;
+        }
+        this.IDCard = IDCard.trim();
     }
 
     public String getNationality() {
@@ -126,7 +207,10 @@ public class Student {
     }
 
     public void setNationality(String nationality) {
-        this.nationality = nationality;
+        if (nationality == null) {
+            return;
+        }
+        this.nationality = nationality.trim();
     }
 
     public String getNation() {
@@ -134,15 +218,54 @@ public class Student {
     }
 
     public void setNation(String nation) {
-        this.nation = nation;
+        if (nation == null) {
+            return;
+        }
+        this.nation = nation.trim();
     }
 
-    public String getBhyt() {
-        return bhyt;
+    public String getBHYT() {
+        return BHYT;
     }
 
-    public void setBhyt(String bhyt) {
-        this.bhyt = bhyt;
+    public void setBHYT(String BHYT) {
+        if (BHYT == null) {
+            return;
+        }
+        this.BHYT = BHYT.trim();
+    }
+
+    public String getPersonalName() {
+        return personalName;
+    }
+
+    public void setPersonalName(String personalName) {
+        if (personalName == null) {
+            return;
+        }
+        this.personalName = personalName.trim();
+    }
+
+    public String getPhonePersonal() {
+        return phonePersonal;
+    }
+
+    public void setPhonePersonal(String phonePersonal) {
+        if (phonePersonal == null) {
+            return;
+        }
+        this.phonePersonal = phonePersonal.trim();
+    }
+
+    public String getAddressPersonal() {
+        return addressPersonal;
+    }
+
+    public void setAddressPersonal(String addressPersonal) {
+        if (addressPersonal == null) {
+            return;
+        }
+        this.addressPersonal = addressPersonal.trim();
     }
 
     public Image getAvatar() {
@@ -153,43 +276,64 @@ public class Student {
         this.Avatar = Avatar;
     }
 
-    public String getStudentId() {
-        return studentId;
+    public String getIDStudent() {
+        return IDStudent.trim();
     }
 
-    public void setStudentId(String studentId) {
-        this.studentId = studentId;
+    public void setIDStudent(String IDStudent) {
+        if (IDStudent == null) {
+            return;
+        }
+        this.IDStudent = IDStudent.trim();
     }
 
-    public String getUniversity() {
-        return university;
+    public String getIDRoom() {
+        return IDRoom;
     }
 
-    public void setUniversity(String university) {
-        this.university = university;
+    public void setIDRoom(String IDRoom) {
+        if (IDRoom == null) {
+            return;
+        }
+        this.IDRoom = IDRoom.trim();
+        Matcher matcher = Pattern.compile("(?:[A-Z]+)").matcher(this.IDRoom);
+        if (!matcher.find()) {
+            throw new NullPointerException("Wrong Format");
+        }
+        this.numRoom = this.IDRoom.substring(0, matcher.start());
+        this.IDBuilding = this.IDRoom.substring(matcher.start());
     }
 
-    public String getRoom() {
-        return room;
+    public void setIDRoom(String numRoom, String IDBuilding) {
+        numRoom = numRoom.trim();
+        IDBuilding = IDBuilding.trim();
+        this.IDRoom = numRoom + IDBuilding;
     }
 
-    public void setRoom(String room) {
-        this.room = room;
+    public String getIDSchool() {
+        return IDSchool;
     }
 
-    public LocalDate getComeDate() {
+    public void setIDSchool(String IDSchool) {
+        if (IDSchool == null) {
+            return;
+        }
+        this.IDSchool = IDSchool.trim();
+    }
+
+    public Date getComeDate() {
         return comeDate;
     }
 
-    public void setComeDate(LocalDate comeDate) {
+    public void setComeDate(Date comeDate) {
         this.comeDate = comeDate;
     }
 
-    public LocalDate getExpDate() {
+    public Date getExpDate() {
         return expDate;
     }
 
-    public void setExpDate(LocalDate expDate) {
+    public void setExpDate(Date expDate) {
         this.expDate = expDate;
     }
 
@@ -201,30 +345,11 @@ public class Student {
         this.status = status;
     }
 
-    public String getPersonalName() {
-        return personalName;
+    public void setStatus(String sta) {
+        if (sta == null) {
+            return;
+        }
+        sta = sta.trim();
+        this.status = Integer.parseInt(sta);
     }
-
-    public void setPersonalName(String personalName) {
-        this.personalName = personalName;
-    }
-
-    public String getPhonePersonal() {
-        return phonePersonal;
-    }
-
-    public void setPhonePersonal(String phonePersonal) {
-        this.phonePersonal = phonePersonal;
-    }
-
-    public String getAddressPersonal() {
-        return addressPersonal;
-    }
-
-    public void setAddressPersonal(String addressPersonal) {
-        this.addressPersonal = addressPersonal;
-    }
-    
-    
-    
 }

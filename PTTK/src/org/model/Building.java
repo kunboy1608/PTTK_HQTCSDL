@@ -1,72 +1,87 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates Hoang Dinh Phu 19520838
+ * and open the template in the editor.
+ */
 package org.model;
 
+/**
+ *
+ * @author kunbo
+ */
 public class Building {
-    
-    private String buildingId;
-    private String employeeId;
-    private String name;
-    private String kind;
+
+    String IDBuilding;
+    String IDEmployee;
+    String Name;
+    String kind;
 
     public Building() {
+        this.IDBuilding = "";
+        this.IDEmployee = "";
+        this.Name = "";
+        this.kind = "";
     }
 
-    public Building(String buildingId, String employeeId, String name, String kind) {
-        this.buildingId = buildingId;
-        this.employeeId = employeeId;
-        this.name = name;
-        this.kind = kind;
-    }
-    
-    public String getBuildingId() {
-        return buildingId;
-    }
-
-    public void setBuildingId(String buildingId) {
-        this.buildingId = buildingId;
-    }
-
-    public String getEmployeeId() {
-        return employeeId;
-    }
-
-    public void setEmployeeId(String employeeId) {
-        this.employeeId = employeeId;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setKind(int k) {
-        this.kind = (k == 0) ? "Nam"
-                             : (k == 1) ? "Nữ"
-                                        : "Khác";
-    }
-    
-    public void setKind(String k) {
-        this.kind = k;
-    }
-    
-    public int getKind() {
-        return ("Nam".equals(this.kind)) 
-                    ? 0
-                    : ("Nữ".equals(this.kind)) 
-                        ? 1
-                        : 2;
-    }
-    
     public Object[] toObject(boolean b) {
         return new Object[]{
             b,
-            buildingId,
-            employeeId,
-            name,
+            IDBuilding,
+            IDEmployee,
+            Name,
             kind
         };
     }
-    
+
+    public String getIDBuilding() {
+        return IDBuilding;
+    }
+
+    public void setIDBuilding(String IDBuilding) {
+        if (IDBuilding == null) {
+            return;
+        }
+        this.IDBuilding = IDBuilding.trim();
+    }
+
+    public String getIDEmployee() {
+        return IDEmployee;
+    }
+
+    public void setIDEmployee(String IDEmployee) {
+        if (IDEmployee == null) {
+            return;
+        }
+        this.IDEmployee = IDEmployee.trim();
+    }
+
+    public String getKind() {
+        return kind;
+    }
+
+    public int getKindInt() {
+        if ("Nam".equals(this.kind)) {
+            return 0;
+        }
+        return 1;
+    }
+
+    public void setKind(int k) {
+        if (k == 0) {
+            this.kind = "Nam";
+        } else {
+            this.kind = "Nữ";
+        }
+    }
+
+    public String getName() {
+        return Name;
+    }
+
+    public void setName(String Name) {
+        if (Name == null) {
+            return;
+        }
+        this.Name = Name.trim();
+    }
 }

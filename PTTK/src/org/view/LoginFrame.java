@@ -1,7 +1,10 @@
 package org.view;
 
+import java.awt.Image;
+import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.sql.SQLException;
+import javax.swing.ImageIcon;
 import org.controller.DatabaseController;
 import org.resources.MetroUI;
 
@@ -17,6 +20,44 @@ public class LoginFrame extends javax.swing.JFrame {
         MetroUI.apply(txtUser, "");
         txtPassword.setBorder(MetroUI.textFieldBorder);
         MetroUI.applySpecilized(btnLogin);
+    }
+    
+    private void login() {
+        StringBuilder sb = new StringBuilder();
+        
+        //DEVELOPMENT PURPOSE
+        if (txtUser.getText().equals("admin")) {
+            MainFrame.getInstance().setVisible(true);
+            MainFrame.getInstance().setUser(
+                "Nhà Phát triển", 
+                "[Dev] 66891153",
+                new ImageIcon(
+                    new ImageIcon("src/org/resources/img/bill.png")
+                        .getImage()
+                        .getScaledInstance(60, 60, Image.SCALE_DEFAULT)
+                )
+            );
+            this.dispose();
+            return;
+        }
+
+        if (txtUser.getText().length() == 0 || txtPassword.getPassword().length == 0) {
+           lbMessage.setText("Thiếu thông tin đăng nhập");
+        }
+        try {
+            DatabaseController.setPassword(txtPassword.getPassword());
+            DatabaseController.setUsername(txtUser.getText());
+            if (DatabaseController.Login()) {
+                DatabaseController.setRole();
+                DatabaseController.initialAvatar();
+                DatabaseController.setFullName();
+                this.setVisible(false);
+            } else {
+                lbMessage.setText("Đăng nhập thất bại");
+            }
+        } catch (SQLException | IOException ex) {
+            ex.printStackTrace();
+        }
     }
     
     @SuppressWarnings("unchecked")
@@ -45,6 +86,11 @@ public class LoginFrame extends javax.swing.JFrame {
 
         txtUser.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         txtUser.setForeground(new java.awt.Color(153, 153, 153));
+        txtUser.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtPasswordKeyReleased(evt);
+            }
+        });
 
         btnLogin.setBackground(new java.awt.Color(51, 51, 51));
         btnLogin.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
@@ -59,6 +105,11 @@ public class LoginFrame extends javax.swing.JFrame {
 
         txtPassword.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         txtPassword.setEchoChar('\u25cf');
+        txtPassword.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtPasswordKeyReleased(evt);
+            }
+        });
 
         lbMessage.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         lbMessage.setForeground(new java.awt.Color(255, 0, 0));
@@ -127,34 +178,14 @@ public class LoginFrame extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLoginActionPerformed
-        StringBuilder sb = new StringBuilder();
-        
-        //DEVELOPMENT PURPOSE
-        if (txtUser.getText().equals("admin")) {
-            MainFrame.getInstance().setVisible(true);
-            MainFrame.getInstance().setUser("Nhà Phát triển", "[Dev] 66891153");
-            this.dispose();
-            return;
-        }
-
-        if (txtUser.getText().length() == 0 || txtPassword.getPassword().length == 0) {
-           lbMessage.setText("Thiếu thông tin đăng nhập");
-        }
-        try {
-            DatabaseController.setPassword(txtPassword.getPassword());
-            DatabaseController.setUsername(txtUser.getText());
-            if (DatabaseController.Login()) {
-                DatabaseController.setRole();
-                DatabaseController.initialAvatar();
-                DatabaseController.setFullName();
-                this.setVisible(false);
-            } else {
-                lbMessage.setText("Đăng nhập thất bại");
-            }
-        } catch (SQLException | IOException ex) {
-            ex.printStackTrace();
-        }
+        login();
     }//GEN-LAST:event_btnLoginActionPerformed
+
+    private void txtPasswordKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtPasswordKeyReleased
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            login();
+        }
+    }//GEN-LAST:event_txtPasswordKeyReleased
 
     public static void main(String args[]) {
         
@@ -184,4 +215,5 @@ public class LoginFrame extends javax.swing.JFrame {
     private javax.swing.JPasswordField txtPassword;
     private javax.swing.JTextField txtUser;
     // End of variables declaration//GEN-END:variables
+
 }

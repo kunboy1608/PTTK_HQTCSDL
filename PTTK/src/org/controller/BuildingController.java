@@ -5,150 +5,233 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.table.DefaultTableModel;
-import org.model.Building;
+import org.model.*;
 
-public class BuildingController implements Controller<Building>, DatabaseOperators<Building> {
+public class BuildingController {
 
-    private ArrayList<Building> list = new ArrayList<>();
-    
-    private static final BuildingController instance = new BuildingController();
-    
-    private BuildingController() { }
+    private static DefaultTableModel model = null;
+    private static DefaultTableModel filterModel = null; // Để lưu kết quả tìm kiếm
+    private static ArrayList<Building> arr = null;
 
-    public static Building parse(Vector<Object> v) {
-        Building t = new Building();
-        
-        t.setBuildingId((String)v.get(0));
-        t.setName((String)v.get(1));
-        t.setEmployeeId((String)v.get(2));
-        t.setKind((String)v.get(3));
-        return t;
-    }
-    
-    public static BuildingController getInstance() {
-        return instance;
-    }
-        
-    @Override
-    public String[] getHeader() {
-        return new String[] {
-            
-        };
+    public static ArrayList<String> getListBuilding() {
+        initialData();
+        ArrayList<String> a = new ArrayList<>();
+        arr.forEach(b -> {
+            a.add(b.getIDBuilding());
+        });
+        return a;
     }
 
-    @Override
-    public ArrayList<Building> getList() {
-        return this.list;
-    }
-
-    @Override
-    public Building get(String id) {
-        for (Building t : list) {
-            if (t.getBuildingId().equals(id)) {
-                return t;
+    public static Building showFullInfo(String IDBuilding) {
+        IDBuilding = IDBuilding.trim();
+        for (Building b : arr) {
+            if (IDBuilding.equals(b.getIDBuilding().trim())) {
+                return b;
             }
         }
         return null;
     }
 
-    @Override
-    public void delete(String id) {
-        list.remove(this.get(id));
-    }
-
-    @Override
-    public DefaultTableModel toTable() {
-        DefaultTableModel tableModel = new DefaultTableModel();
-        for (Building b : list) {
-            tableModel.addRow(toVector(b));
-        }
-        return tableModel;
-    }
-
-    @Override
-    public Vector<Object> toVector(Building obj) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    /* DATABASE HANDLING METHODS
-    *  =========================================================================
-    */
-    
-    @Override
-    public void databaseLoad() throws SQLException {
+    public static boolean updateData(Building b) {
         try {
-            Statement stmt = DatabaseController.getConnection().createStatement();
+            String sql = "Update hqtcsdl.Toa set "
+                    + "IDNhanVien = '" + b.getIDEmployee()
+                    + "', TenToa  = '" + b.getName()
+                    + "', LoaiToa = '" + b.getKindInt()
+                    + "' Where (IDToa = '" + b.getIDBuilding()
+                    + "')";
+            PreparedStatement ps = User.getConnection().prepareCall(sql);
+            User.getConnection().setAutoCommit(false);
+            if (ps.executeUpdate() != 1) {
+                User.getConnection().rollback();
+                User.getConnection().setAutoCommit(true);
+                return false;
+            }
+            User.getConnection().commit();
+            User.getConnection().setAutoCommit(true);
+            return true;
+        } catch (SQLException e) {
+            System.out.println("Lỗi truy vấn ở Tòa");
+            try {
+                User.getConnection().setAutoCommit(true);
+            } catch (SQLException ex) {
+                Logger.getLogger(BuildingController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public static boolean delData(String IDBuilding) {
+        try {
+            String sql = "Delete hqtcsdl.Toa "
+                    + "where (IDToa='"
+                    + IDBuilding.trim()
+                    + "')";
+            System.out.println(sql);
+            PreparedStatement ps = User.getConnection().prepareCall(sql);
+            if (ps.executeUpdate() != 1) {
+                return false;
+            }
+            return true;
+
+        } catch (SQLException e) {
+            System.out.println("Lỗi xóa tòa");
+            return false;
+        }
+    }
+
+    public static boolean insData(Building b) {
+        try {
+            String sql = "Insert into hqtcsdl.Toa values('"
+                    + b.getIDBuilding() + "','"
+                    + b.getIDEmployee() + "','"
+                    + b.getName() + "','"
+                    + b.getKindInt()
+                    + "')";
+            PreparedStatement ps = User.getConnection().prepareStatement(sql);
+            User.getConnection().setAutoCommit(false);
+            if (ps.executeUpdate() != 1) {
+                User.getConnection().rollback();
+                User.getConnection().setAutoCommit(true);
+                return false;
+            }
+            User.getConnection().commit();
+            User.getConnection().setAutoCommit(true);
+            return true;
+        } catch (SQLException e) {
+            System.out.println("Lỗi câu truy vấn ở tòa");
+            try {
+                User.getConnection().setAutoCommit(true);
+            } catch (SQLException ex) {
+                Logger.getLogger(BuildingController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public static void unSearch() {
+        filterModel = null;
+    }
+
+    public static void searchData(
+            String IDBuilding,
+            String IDEmployee,
+            String Name,
+            String kind
+    ) {
+        filterModel = new DefaultTableModel(new Object[]{
+            " ",
+            "Mã tòa",
+            "Mã trưởng tòa",
+            "Tên tòa",
+            "Loại tòa",}, 0) {
+            @Override
+            public Class getColumnClass(int columnIndex) {
+                switch (columnIndex) {
+                    case 0:
+                        return Boolean.class;
+                    default:
+                        return String.class;
+                }
+            }
+
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return column == 0;
+            }
+        };
+        for (int i = 0; i < model.getRowCount(); i++) {
+            if (compareCloseTo(IDBuilding, model.getValueAt(i, 1).toString())
+                    && compareCloseTo(IDEmployee, model.getValueAt(i, 2).toString())
+                    && compareCloseTo(Name, model.getValueAt(i, 3).toString())
+                    && compareCloseTo(kind, model.getValueAt(i, 4).toString())) {
+                filterModel.addRow(new Object[]{
+                    true,
+                    model.getValueAt(i, 1),
+                    model.getValueAt(i, 2),
+                    model.getValueAt(i, 3),
+                    model.getValueAt(i, 4)
+                });
+            }
+        }
+    }
+
+    private static boolean compareCloseTo(String subString, String containString) {
+        // Nếu chuỗi con null --> Tìm với mọi kết quả
+        if (subString == null) {
+            return true;
+        }
+        // Chuỗi mẹ null --> thoát
+        if (containString == null) {
+            return false;
+        }
+        // Xử lí UpCase với trim để được chuỗi phù hợp nhất
+        containString = containString.trim();
+        containString = containString.toUpperCase();
+        subString = subString.trim();
+        subString = subString.toUpperCase();
+
+        // Trả về kết quả chuỗi con nằm ? thuộc chuỗi mẹ 
+        return containString.contains(subString);
+    }
+
+    public static DefaultTableModel getFilterModel() {
+        return filterModel;
+    }
+
+    public static DefaultTableModel getModel() {
+        return model;
+    }
+
+    public static void initialModel() {
+        model = new DefaultTableModel(new Object[]{
+            " ",
+            "Mã tòa",
+            "Mã trưởng tòa",
+            "Tên tòa",
+            "Loại tòa",}, 0) {
+            @Override
+            public Class getColumnClass(int columnIndex) {
+                switch (columnIndex) {
+                    case 0:
+                        return Boolean.class;
+                    default:
+                        return String.class;
+                }
+            }
+
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return column == 0;
+            }
+        };
+        arr.forEach(b -> {
+            model.addRow(b.toObject(false));
+        });
+    }
+
+    @SuppressWarnings("empty-statement")
+    public static void initialData() {
+        try {
+            arr = new ArrayList<>();
+            Statement stmt = User.getConnection().createStatement();
             ResultSet rs = stmt.executeQuery("Select * from hqtcsdl.Toa");
             while (rs.next()) {
                 Building b = new Building();
-                b.setBuildingId(rs.getString("IDTOA"));
-                b.setEmployeeId(rs.getString("IDNHANVIEN"));
+                b.setIDBuilding(rs.getString("IDTOA"));
+                b.setIDEmployee(rs.getString("IDNHANVIEN"));
                 b.setName(rs.getString("TENTOA"));
                 b.setKind(rs.getInt("LOAITOA"));
-                list.add(b);
+                arr.add(b);
             };
         } catch (SQLException e) {
+            System.out.println("Lỗi câu truy vấn ở tòa");
             e.printStackTrace();
         }
     }
-
-    @Override
-    public void databaseInsert(Building obj) throws SQLException {
-        try {
-            String sql = "Insert into htqcsb) dl.Toa values('"
-                    + obj.getBuildingId()+ "','"
-                    + obj.getEmployeeId()+ "','"
-                    + obj.getName() + "','"
-                    + obj.getKind()
-                    + "')";
-            PreparedStatement ps = DatabaseController.getConnection().prepareStatement(sql);
-            DatabaseController.getConnection().setAutoCommit(false);
-            if (!ps.execute()) {
-                DatabaseController.getConnection().rollback();
-            } else {
-                DatabaseController.getConnection().commit();
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            DatabaseController.getConnection().setAutoCommit(true);
-        }
-    }
-
-    @Override
-    public void databaseUpdate(Building obj) throws SQLException {
-        try {
-            String sql = "Update hqtcsdl.Toa set "
-                    + "IDNhanVien = '" + obj.getEmployeeId()
-                    + "', TenToa  = '" + obj.getName()
-                    + "', LoaiToa = '" + obj.getKind()
-                    + "' Where (IDToa = '" + obj.getBuildingId()
-                    + "')";
-            PreparedStatement ps = DatabaseController.getConnection().prepareCall(sql);
-            DatabaseController.getConnection().setAutoCommit(false);
-            
-            if (!ps.execute()) {
-                DatabaseController.getConnection().rollback();
-            } else {
-                DatabaseController.getConnection().commit();
-            }   
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            DatabaseController.getConnection().setAutoCommit(true);
-        }
-    }
-
-    @Override
-    public void databaseDelete(Building obj) throws SQLException {
-        String sql = "Delete hqtcsdl.Toa "
-                + "where (IDToa='"
-                + obj.getBuildingId()
-                + "')";
-        PreparedStatement ps = DatabaseController.getConnection().prepareCall(sql);
-        ps.execute();
-    }
-
 }

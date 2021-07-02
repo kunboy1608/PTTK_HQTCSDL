@@ -1,287 +1,442 @@
 package org.controller;
 
-import java.sql.Blob;
+import java.io.ByteArrayInputStream;
+import java.sql.CallableStatement;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Vector;
 import javax.swing.table.DefaultTableModel;
-import org.model.Employee;
-import org.resources.ImageProcess;
+import org.model.*;
 
-public class EmployeeController implements Controller<Employee>, DatabaseOperators<Employee>{
-    
-    private ArrayList<Employee> list = new ArrayList<>();
-    private static final EmployeeController INSTANCE = new EmployeeController();
-    
-    private EmployeeController() { }
-    
-    public static EmployeeController getInstance() {
-        return INSTANCE;
-    }
-    
-    public static Employee parse(Vector<Object> v) {
-        Employee t = new Employee();
-        
-        t.setCardId((String)v.get(0));
-        t.setSurname((String)v.get(1));
-        t.setName((String)v.get(2));
-        t.setSex((String)v.get(3));
-        t.setRoom((String)v.get(4));
-        t.setStartDate((LocalDate)v.get(5));
-        t.setAddress((String)v.get(6));
-                
-        return t;
+public class EmployeeController {
+
+    private static DefaultTableModel model = null;
+    private static DefaultTableModel filterModel = null; // Để lưu kết quả tìm kiếm
+    private static ArrayList<Employee> arr = null;
+
+    // Lấy danh sách nhân viên
+    public static ArrayList<String> getListIDEmployee() {
+        ArrayList<String> a = new ArrayList<>();
+        initialData();
+        arr.forEach(e -> {
+            a.add(e.getIDEmployee());
+        });
+        return a;
     }
 
-    @Override
-    public String[] getHeader() {
-        return new String[] {
-            "Mã Nhân Viên", "Họ tên", "Giới tính", "Phòng", "Ngày vào làm", "Địa chỉ"
-        };
+    public static DefaultTableModel getFilterModel() {
+        return filterModel;
     }
 
-    @Override
-    public ArrayList<Employee> getList() {
-        return this.list;
+    public static DefaultTableModel getModel() {
+        return model;
     }
 
-    @Override
-    public Employee get(String id) {
-       for (Employee t : list) {
-            if (t.getCardId().equals(id)) {
-                return t;
+    public static Employee showFullInfo(String IDEmployee) {
+        IDEmployee = IDEmployee.trim();
+        for (Employee e : arr) {
+            if (IDEmployee.equals(e.getIDEmployee().trim())) {
+                return e;
             }
         }
         return null;
     }
 
-    @Override
-    public void delete(String id) {
-        list.remove(this.get(id));
-    }
-
-    @Override
-    public DefaultTableModel toTable() {
-        DefaultTableModel tableModel = new DefaultTableModel();
-        tableModel.setColumnIdentifiers(this.getHeader());
-        for (Employee b : list) {
-            tableModel.addRow(toVector(b));
+    private static boolean compareCloseTo(String subString, String containString) {
+        // Nếu chuỗi con null --> Tìm với mọi kết quả
+        if (subString == null) {
+            return true;
         }
-        return tableModel;
-    }
-
-    @Override
-    public Vector<Object> toVector(Employee obj) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-    
-    /* DATABASE HANDLING METHODS
-    *  =========================================================================
-    */
-    
-    @Override
-    public void databaseLoad() throws SQLException {
-        Statement stmt = DatabaseController.getConnection().createStatement();
-        ResultSet rs = stmt.executeQuery("select t.Ho, t.Ten, t.DiaChi, t.GioiTinh, t.NgaySinh, t.SDT,\n"
-                + "t.Email, t.CMND, t.QuocTich, t.DanToc, t.BHYT,\n"
-                + "t.TenThanNhan, t.SDTThanNhan, t.DiaChiThanNhan, t.HinhAnh,\n"
-                + "n.IDNhanVien, n.IDPhongNhanVien, n.QuanLiPhong, n.VaoLam, n.TrangThai\n"
-                + "from (select * from hqtcsdl.ThongTinCoBan where (ID > 10000)) t \n"
-                + "join (select * from hqtcsdl.NhanVien where TrangThai = 0) n \n"
-                + "on t.ID = s.ID\n"
-                + "order by t.ID");
-        while (rs.next()) {
-            Employee e = new Employee();
-                e.setSurname(rs.getString("t.HO"));
-                e.setName(rs.getString("t.TEN"));
-                e.setAddress(rs.getString("t.DIACHI"));
-                e.setSex(
-                    rs.getInt("t.GIOITINH") == 0 
-                        ? "Nam"
-                        : rs.getInt("t.GIOITINH") == 1
-                            ? "Nữ"
-                            : "Khác"
-                );
-                e.setBirthday(rs.getDate("t.NGAYSINH").toLocalDate());
-                e.setPhoneNumber(rs.getString("t.SDT"));
-                e.setEmail(rs.getString("t.Email"));
-                e.setCardId(rs.getString("t.CMND"));
-                e.setNationality(rs.getString("t.QUOCTICH"));
-                e.setNation(rs.getString("t.DANTOC"));
-                e.setBhyt(rs.getString("t.BHYT"));
-                e.setPersonalName(rs.getString("t.TENTHHANNHAN"));
-                e.setPhoneNumber(rs.getString("t.SDTTHANNHAN"));
-                e.setAddressPersonal(rs.getString("t.DIACHITHANNHAN"));
-                e.setAvatar(ImageProcess.createImageFromBlob(rs.getBlob("t.HINHANH")));
-                e.setCardId(rs.getString("n.IDNHANVIEN"));
-                e.setRoom(rs.getString("n.IDPHONGNHANVIEN"));
-    //            e.setIDRoomManage(rs.getString("n.QUANLIPHONG"));
-                e.setStartDate(rs.getDate("n.NGAYVAOLAM").toLocalDate());
-                e.setStatus(rs.getInt("n.TRANGTHAI"));
-            this.list.add(e);
+        // Chuỗi mẹ null --> thoát
+        if (containString == null) {
+            return false;
         }
+        // Xử lí UpCase với trim để được chuỗi phù hợp nhất
+        containString = containString.trim();
+        containString = containString.toUpperCase();
+        subString = subString.trim();
+        subString = subString.toUpperCase();
+
+        // Trả về kết quả chuỗi con nằm ? thuộc chuỗi mẹ 
+        return containString.contains(subString);
     }
 
-    @Override
-    public void databaseInsert(Employee obj) throws SQLException {
-        try {
-            // Kiểm tra xem Sinh viên này đã từng tồn tại chưa
-            String sql = "Select count(*) "
-                    + "from hqtcsdl.NhanVien n join ThongTinCoBan t "
-                    + "on n.ID = t.ID "
-                    + "where (TrangThai != 0 and CMND ='"
-                    + obj.getCardId()
-                    + "')";
-            PreparedStatement ps = DatabaseController.getConnection().prepareStatement(sql);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next() & rs.getInt(1) > 0) {
-                return;
+    public static void searchData(
+            String IDEmployee,
+            String Surname,
+            String Name,
+            String Sex,
+            String IDCard,
+            String IDDepartment,
+            String workingDate,
+            String address) {
+        filterModel = new DefaultTableModel(new Object[]{
+            " ",
+            "Mã nhân viên",
+            "Họ, tên đệm",
+            "Tên",
+            "Giới tính",
+            "CMND/CCCD",
+            "Mã phòng ban",
+            "Ngày vào làm",
+            "Địa chỉ",}, 0) {
+            @Override
+            public Class getColumnClass(int columnIndex) {
+                switch (columnIndex) {
+                    case 0:
+                        return Boolean.class;
+                    case 7:
+                        return Date.class;
+                    default:
+                        return String.class;
+                }
             }
-            sql = "Insert into htqcsdl.ThongTinCoBan values( "
-                    + "'"
-                    + obj.getSurname() + "','"
-                    + obj.getName() + "','"
-                    + obj.getAddress() + "','"
-                    + obj.getSex() + "','"
-                    + "?','" // Thêm ngày sinh
-                    + obj.getPhoneNumber() + "','"
-                    + obj.getEmail() + "','"
-                    + obj.getCardId()+ "','"
-                    + obj.getNationality() + "','"
-                    + obj.getNation() + "','"
-                    + obj.getBhyt()+ "','"
-                    + obj.getPersonalName() + "','"
-                    + obj.getPhonePersonal() + "','"
-                    + obj.getAddressPersonal() + "',"
+
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return column == 0;
+            }
+        };
+        for (int i = 0; i < model.getRowCount(); i++) {
+            if (compareCloseTo(IDEmployee, model.getValueAt(i, 1).toString())
+                    && compareCloseTo(Surname, model.getValueAt(i, 2).toString())
+                    && compareCloseTo(Name, model.getValueAt(i, 3).toString())
+                    && compareCloseTo(Sex, model.getValueAt(i, 4).toString())
+                    && compareCloseTo(IDCard, model.getValueAt(i, 5).toString())
+                    && compareCloseTo(IDDepartment, model.getValueAt(i, 6).toString())
+                    && compareCloseTo(workingDate, model.getValueAt(i, 7).toString())
+                    && compareCloseTo(address, model.getValueAt(i, 8).toString())) {
+                filterModel.addRow(new Object[]{
+                    true,
+                    model.getValueAt(i, 1),
+                    model.getValueAt(i, 2),
+                    model.getValueAt(i, 3),
+                    model.getValueAt(i, 4),
+                    model.getValueAt(i, 5),
+                    model.getValueAt(i, 6),
+                    model.getValueAt(i, 7),
+                    model.getValueAt(i, 8)
+                });
+            }
+        }
+    }
+
+    public static void unSearch() {
+        filterModel = null;
+    }
+
+    public static boolean insData(Employee e) {
+        try {
+            // Kiểm tra xem Nhân viên này đã từng tồn tại chưa
+            String sql = "Select count(*) "
+                    + "from hqtcsdl.NhanVien s join ThongTinCoBan t "
+                    + "on s.ID =  t.ID "
+                    + "where (CMND ='"
+                    + e.getIDCard()
+                    + "')";
+            System.out.println(sql);
+            PreparedStatement ps = User.getConnection().prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                if (rs.getInt(1) > 0) {
+                    System.out.println(rs.getInt(1));
+                    if (updateData(e)) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+            }
+            sql = "select hqtcsdl.s_ID_NhanVien.nextval from dual";
+            Statement stmt = User.getConnection().createStatement();
+            rs = stmt.executeQuery(sql);
+            int IDtemp = -1;
+            while (rs.next()) {
+                IDtemp = rs.getInt(1);
+            }
+            if (IDtemp == -1) {
+                User.getConnection().rollback();
+                User.getConnection().setAutoCommit(true);
+                return false;
+            }
+
+            sql = "Insert into hqtcsdl.ThongTinCoBan values('"
+                    + String.valueOf(IDtemp) + "','"
+                    + e.getSurname() + "','"
+                    + e.getName() + "','"
+                    + e.getAddress() + "',"
+                    + "?,"
+                    + "?,'" // Thêm ngày sinh
+                    + e.getPhoneNumber() + "','"
+                    + e.getEmail() + "','"
+                    + e.getIDCard() + "','"
+                    + e.getNationality() + "','"
+                    + e.getNation() + "','"
+                    + e.getBHYT() + "','"
+                    + e.getPersonalName() + "','"
+                    + e.getPhonePersonal() + "','"
+                    + e.getAddressPersonal() + "',"
                     + "?)" // Thêm Avatar
                     ;
-            ps = DatabaseController.getConnection().prepareStatement(sql);
-            DatabaseController.getConnection().setAutoCommit(false);
-            ps.setDate(1, new Date(
-                    obj.getBirthday().atStartOfDay(ZoneId.systemDefault())
-                                     .toInstant().toEpochMilli()
-            ));
-            Blob b = null;
-            b.setBytes(1, ImageProcess.toByteArray(obj.getAvatar(), "jpg"));
-            ps.setBlob(2, b);
-
-            if (!ps.execute()) {
-                DatabaseController.getConnection().rollback();
-                DatabaseController.getConnection().setAutoCommit(true);
-                return;
+            System.out.println(sql);
+            ps = User.getConnection().prepareStatement(sql);
+            User.getConnection().setAutoCommit(false);
+            ps.setInt(1, e.getSexInt());
+            ps.setDate(2, new java.sql.Date(e.getBirthday().getTime()));
+            if (e.getAvatar() != null) {
+                byte[] b = ImageProcess.toByteArray(e.getAvatar(), "jpg");
+                ps.setBinaryStream(3, new ByteArrayInputStream(b), b.length);
+            } else {
+                ps.setString(3, "");
             }
-            
+
+            if (ps.executeUpdate() != 1) {
+                User.getConnection().rollback();
+                User.getConnection().setAutoCommit(true);
+                return false;
+            }
+
             sql = "Insert into hqtcsdl.NhanVien values('"
-                    + "IDEmployee" // Cho này thêm IDNhanVien
-                    + obj.getRoom()+ "','"
-                    + obj.getRoom() + "','"
-                    + "ID" + "'," // Chỗ này thêm ID
+                    + String.valueOf(IDtemp + 10000) + "','" // Cho này thêm IDNhanVien
+                    + e.getIDDepartment() + "',"
+                    + "null,'"
+                    // Chỗ này là Phòng nào mà nhân viên này quản lí. Sẽ được thêm bên quản lí phòng
+                    + String.valueOf(IDtemp) + "','"// Chỗ này thêm ID
                     + "?," // Chỗ này thêm ngày vào làm
                     + "?)"; // Chỗ này  thêm trạng thái
-            ps = DatabaseController.getConnection().prepareStatement(sql);
-            ps.setDate(1, new Date(
-                    obj.getStartDate().atStartOfDay(ZoneId.systemDefault())
-                                      .toInstant().toEpochMilli()
-            ));
-            ps.setInt(2, obj.getStatus());
+            System.out.println(sql);
+            ps = User.getConnection().prepareStatement(sql);
+            ps.setDate(1, new java.sql.Date(e.getWorkingDate().getTime()));
+            ps.setInt(2, e.getStatus());
 
-            if (!ps.execute()) {
-                DatabaseController.getConnection().rollback();
-            } else {
-                DatabaseController.getConnection().commit();
+            if (ps.executeUpdate() != 1) {
+                User.getConnection().rollback();
+                User.getConnection().setAutoCommit(true);
+                return false;
             }
+
+            User.getConnection().commit();
+            User.getConnection().setAutoCommit(true);
+
+            return true;
         } catch (SQLException ex) {
+            System.out.println("Lỗi câu truy vấn ở Nhân viên");
             ex.printStackTrace();
-        } finally {
-            DatabaseController.getConnection().setAutoCommit(true);
+            try {
+                User.getConnection().rollback();
+                User.getConnection().setAutoCommit(true);
+
+            } catch (SQLException exc) {
+                System.out.println("Lỗi commit ở Nhân viên");
+            }
+            return false;
         }
     }
 
-    @Override
-    public void databaseUpdate(Employee obj) throws SQLException {
+    public static boolean delData(String IDEmployee, String IDCard) {
         try {
-            // Cập nhật phần bảng SinhVien
             String sql = "Update hqtcsdl.NhanVien set "
-                    + "IDPhongNhanVien = '" + obj.getRoom()
-                    + "', QuanLiPhong = '" + obj.getRoom()
-                    + "', NgayVao = ?"
-                    + ", TrangThai = ?"
-                    + " Where (IDNhanVien = '" + obj.getCardId()
+                    + "TrangThai = '1' "
+                    + "Where (IDNhanVien ='"
+                    + IDEmployee
                     + "')";
-            PreparedStatement ps = DatabaseController.getConnection().prepareCall(sql);
-            DatabaseController.getConnection().setAutoCommit(false);
-            ps.setDate(1, new Date(
-                    obj.getStartDate().atStartOfDay(ZoneId.systemDefault())
-                                      .toInstant().toEpochMilli()
-            ));
-            ps.setInt(2, obj.getStatus());
+            PreparedStatement ps = User.getConnection().prepareStatement(sql);
+            if (ps.executeUpdate() != 1) {
+                return false;
+            }
+            delAccount(IDCard);
+            return true;
 
-            if (!ps.execute()) {
-                DatabaseController.getConnection().rollback();
-                DatabaseController.getConnection().setAutoCommit(true);
-                return;
+        } catch (SQLException e) {
+            System.out.println("Lỗi xóa Nhân viên");
+            return false;
+        }
+    }
+
+    public static void delAccount(String IDCard) {
+        try {
+            String sql = "Drop user \""
+                    + IDCard + "\" ";
+            CallableStatement cs = User.getConnection().prepareCall(sql);
+            cs.execute();
+        } catch (SQLException e) {
+            System.out.println("Lỗi xóa tài khoản Nhân viên");
+        }
+    }
+
+    public static void createAccount(String IDCard) {
+        try {
+            String sql = "Create user \""
+                    + IDCard.trim() + "\" "
+                    + "identified by \"111111\"";
+
+            System.out.println(sql);
+            CallableStatement cs = User.getConnection().prepareCall(sql);
+            cs.execute();
+
+            sql = "Grant r_NhanVien to "
+                    + " \""
+                    + IDCard.trim() + "\" ";
+            System.out.println(sql);
+            cs = User.getConnection().prepareCall(sql);
+            cs.execute();
+        } catch (SQLException e) {
+            System.out.println("Lỗi tạo tài khoản Nhân viên");
+        }
+    }
+
+    public static boolean updateData(Employee e) {
+        try {
+            // Cập nhật phần bảng Nhân viên
+            String sql = "Update hqtcsdl.NhanVien set "
+                    + "IDPhongNhanVien = '" + e.getIDDepartment()
+                    + "', NgayVaoLam = ?"
+                    + ", TrangThai = ?"
+                    + " Where (IDNhanVien = '"
+                    + e.getIDEmployee()
+                    + "')";
+            System.out.println(sql);
+            PreparedStatement ps = User.getConnection().prepareCall(sql);
+            User.getConnection().setAutoCommit(false);
+            ps.setDate(1, new java.sql.Date(e.getWorkingDate().getTime()));
+            ps.setInt(2, e.getStatus());
+            if (ps.executeUpdate() != 1) {
+                User.getConnection().rollback();
+                User.getConnection().setAutoCommit(true);
+                return false;
             }
             // Cập nhật phần bảng thông tin cơ bản
             sql = "Update hqtcsdl.ThongTinCoBan set "
-                    + "Ho = '" + obj.getSurname()
-                    + "', Ten = '" + obj.getName()
-                    + "', DiaChi = '" + obj.getAddress()
-                    + "', GioiTinh = '" + obj.getSex()
+                    + "Ho = '" + e.getSurname()
+                    + "', Ten = '" + e.getName()
+                    + "', DiaChi = '" + e.getAddress()
+                    + "', GioiTinh = '" + e.getSexInt()
                     + "', NgaySinh = ?"
-                    + ", SDT = '" + obj.getPhoneNumber()
-                    + "', Email = '" + obj.getEmail()
-                    + "', CMND = '" + obj.getCardId()
-                    + "', QuocTich = '" + obj.getNationality()
-                    + "', DanToc = '" + obj.getNation()
-                    + "', BHYT = '" + obj.getBhyt()
-                    + "', TenThanNhan = '" + obj.getPersonalName()
-                    + "', SDTThanNhan = '" + obj.getPhonePersonal()
-                    + "', DiaChiThanNhan = '" + obj.getAddressPersonal()
+                    + ", SDT = '" + e.getPhoneNumber()
+                    + "', Email = '" + e.getEmail()
+                    + "', CMND = '" + e.getIDCard()
+                    + "', QuocTich = '" + e.getNationality()
+                    + "', DanToc = '" + e.getNation()
+                    + "', BHYT = '" + e.getBHYT()
+                    + "', TenThanNhan = '" + e.getPersonalName()
+                    + "', SDTThanNhan = '" + e.getPhonePersonal()
+                    + "', DiaChiThanNhan = '" + e.getAddressPersonal()
                     + "', HinhAnh = ?"
                     + " Where (ID in ("
-                    + "select ID from hqtcsdl.SinhVien"
-                    + " where (IDSinhVien='"
-                    + obj.getCardId()
+                    + "select ID from hqtcsdl.NhanVien"
+                    + " where (IDNhanVien='"
+                    + e.getIDEmployee()
                     + "')" //Còn thiếu
                     + "))";
-            ps = DatabaseController.getConnection().prepareCall(sql);
-            ps.setDate(1, new Date(
-                    obj.getBirthday().atStartOfDay(ZoneId.systemDefault())
-                                     .toInstant().toEpochMilli()
-            ));
-            Blob b = null;
-            b.setBytes(1, ImageProcess.toByteArray(obj.getAvatar(), "jpg"));
-            ps.setBlob(2, b);
-
-            if (!ps.execute()) {
-                DatabaseController.getConnection().rollback();
+            System.out.println(sql);
+            ps = User.getConnection().prepareCall(sql);
+            ps.setDate(1, new java.sql.Date(e.getBirthday().getTime()));
+            if (e.getAvatar() != null) {
+                byte[] b = ImageProcess.toByteArray(e.getAvatar(), "jpg");
+                ps.setBinaryStream(2, new ByteArrayInputStream(b), b.length);
             } else {
-                DatabaseController.getConnection().commit();
+                ps.setString(2, "");
             }
-        } catch (SQLException ex) {
+
+            if (ps.executeUpdate() != 1) {
+                User.getConnection().rollback();
+                User.getConnection().setAutoCommit(true);
+                return false;
+            }
+            User.getConnection().commit();
+            User.getConnection().setAutoCommit(true);
+            return true;
+
+        } catch (SQLException | java.lang.NullPointerException ex) {
+            System.out.println("Lỗi câu truy vấn ở Nhân viên");
             ex.printStackTrace();
-        } finally {
-            DatabaseController.getConnection().setAutoCommit(true);
+            try {
+                User.getConnection().rollback();
+                User.getConnection().setAutoCommit(true);
+            } catch (SQLException exc) {
+                System.out.println("Lỗi commit ở Nhân viên");
+            }
+            return false;
         }
     }
 
-    @Override
-    public void databaseDelete(Employee obj) throws SQLException {
-        String sql = "Update hqtcsdl.NHANVIEN set "
-                + "TrangThai = '1' "
-                + "Where (IDSinhvien ='"
-                + obj
-                + "')";
-        PreparedStatement ps = DatabaseController.getConnection().prepareCall(sql);
-        ps.execute();
+    public static void initialModel() {
+        model = new DefaultTableModel(new Object[]{
+            " ",
+            "Mã nhân viên",
+            "Họ, tên đệm",
+            "Tên",
+            "Giới tính",
+            "CMND/CCCD",
+            "Mã phòng ban",
+            "Ngày vào làm",
+            "Địa chỉ",}, 0) {
+            @Override
+            public Class getColumnClass(int columnIndex) {
+                switch (columnIndex) {
+                    case 0:
+                        return Boolean.class;
+                    case 7:
+                        return Date.class;
+                    default:
+                        return String.class;
+                }
+            }
+
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return column == 0;
+            }
+        };
+
+        arr.forEach(e -> {
+            model.addRow(e.toObject(false));
+        });
     }
-    
-    
-            
+
+    @SuppressWarnings("empty-statement")
+    public static void initialData() {
+        try {
+            arr = new ArrayList<>();
+            Statement stmt = User.getConnection().createStatement();
+
+            ResultSet rs = stmt.executeQuery("Select t.Ho, t.Ten, t.DiaChi, t.GioiTinh, t.NgaySinh, t.SDT, \n"
+                    + "t.Email, t.CMND, t.QuocTich, t.DanToc, t.BHYT,\n"
+                    + "t.TenThanNhan, t.SDTThanNhan, t.DiaChiThanNhan, t.HinhAnh,\n"
+                    + "n.IDNhanVien, n.IDPhongNhanVien, n.NgayVaoLam, n.TrangThai \n"
+                    + "from (select * from HQTCSDL.ThongTinCoBan where (ID < 10000)) t \n"
+                    + "join (select * from HQTCSDL.NhanVien Where TrangThai = 0 ) n\n"
+                    + "on n.ID = t.ID \n"
+                    + "order by t.ID");
+
+            while (rs.next()) {
+                Employee e = new Employee();
+                e.setSurname(rs.getString("HO"));
+                e.setName(rs.getString("TEN"));
+                e.setAddress(rs.getString("DIACHI"));
+                e.setSex(rs.getInt("GIOITINH"));
+                e.setBirthday(rs.getDate("NGAYSINH"));
+                e.setPhoneNumber(rs.getString("SDT"));
+                e.setEmail(rs.getString("Email"));
+                e.setIDCard(rs.getString("CMND"));
+                e.setNationality(rs.getString("QUOCTICH"));
+                e.setNation(rs.getString("DANTOC"));
+                e.setBHYT(rs.getString("BHYT"));
+                e.setPersonalName(rs.getString("TENTHANNHAN"));
+                e.setPhoneNumber(rs.getString("SDTTHANNHAN"));
+                e.setAddressPersonal(rs.getString("DIACHITHANNHAN"));
+                e.setAvatar(ImageProcess.createImageFromBlob(rs.getBlob("HINHANH")));
+                e.setIDEmployee(rs.getString("IDNHANVIEN"));
+                e.setIDDepartment(rs.getString("IDPHONGNHANVIEN"));
+                e.setWorkingDate(rs.getDate("NGAYVAOLAM"));
+                e.setStatus(rs.getInt("TRANGTHAI"));
+                arr.add(e);
+            };
+        } catch (SQLException e) {
+            System.out.println("Lỗi truy vấn ở Nhân viên");
+        }
+    }
 }

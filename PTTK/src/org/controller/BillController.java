@@ -5,235 +5,552 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.table.DefaultTableModel;
 import org.model.Bill;
-import org.model.ElectricityReceipt;
-import org.model.WaterReceipt;
 
-public class BillController implements Controller<Bill>, DatabaseOperators<Bill>{
-    
-    public static final String TITLE_NUMBER = "STT";
-    public static final String TITLE_ID = "Mã Hóa Đơn";
-    public static final String TITLE_ROOM = "Phòng";
-    public static final String TITLE_BUILDING = "Tòa";
-    public static final String TITLE_CREATED_DATE = "Ngày Lập";
-    public static final String TITLE_SUBMIT_DATE = "Ngày Thu";
-    public static final String TITLE_TYPE = "Loại";
-    public static final String TITLE_SUM = "Trị giá";
-    
-    private ArrayList<Bill> list = new ArrayList<>();
-    private static BillController instance = new BillController();
-    
-    private BillController() { 
-    }
+public class BillController {
 
-    public static Bill parse(Vector<Object> v) {
-        Bill b = new Bill();
-        
-        b.setBillId((String)v.get(1));
-        b.setRoom((String)v.get(2), (String)v.get(3));
-        b.setCreatedDate(LocalDate.parse((String)v.get(4)));
-        b.setSubmittedDate(LocalDate.parse((String)v.get(5)));
-        b.setType((String)v.get(6));
-        b.setSum((Integer)v.get(7));
-            
-        return b;
-    }
-    
-    public static BillController getInstance() {
-        return BillController.instance;
-    }
-    
-    @Override
-    public ArrayList<Bill> getList() {
-        return this.list;
-    } 
-    
-    @Override
-    public DefaultTableModel toTable() {
-        DefaultTableModel tableModel = new DefaultTableModel();
-        tableModel.setColumnIdentifiers(this.getHeader());
-        int counter = 1;
-        for (Bill b : list) {
-            Vector<Object> v = new Vector();
-            v.add(counter);
-            v.addAll(Arrays.asList(b.getProperties()));
-            System.out.println(v.toString());
-            tableModel.addRow(v);
+    private static DefaultTableModel model = null;
+    private static DefaultTableModel filterModel = null; // Để lưu kết quả tìm kiếm
+    private static ArrayList<Bill> arr = null;
+    private static final BillController instance = new BillController();
+    private static int[] priceE;
+    private static int[] priceW;
+
+    // head là số điện đầu
+    // end là số điện cuối
+    // nem là số người ở trong phòng
+    public static int calPriceE(int head, int end, int nem) {
+        int a = end - head;
+        double point = (double) nem * 12.5;
+        if (a <= point) {
+            return (int) (a * priceE[0]);
         }
-        return tableModel;
+        if (a <= point * 2) {
+            return (int) (point * priceE[0] + (a - point) * priceE[1]);
+        }
+        if (a <= point * 4) {
+            return (int) (point * priceE[0] + point * priceE[1] + (a - point * 2) * priceE[2]);
+        }
+        if (a <= point * 6) {
+            return (int) (point * priceE[0] + point * priceE[1] + point * priceE[2] + (a - point * 4) * priceE[3]);
+        }
+        return (int) (point * priceE[0] + point * priceE[1] + point * priceE[2] + point * priceE[3] + (a - point * 6) * priceE[4]);
+
     }
-   
-    @Override
-    public Bill get(String billId) {
-        for (Bill b : list) {
-            if (b.getBillId().equals(billId)) {
+
+    public static int calPriceW(int head, int end, int num) {
+        int a = end - head;
+        int point = num * 4;
+        if (a <= point) {
+            return a * priceW[0];
+        }
+        if (a <= num * 6) {
+            return point * priceW[0] + (a - point) * priceW[1];
+        }
+        return point + priceW[0] + (num * 6 - point) * priceW[1] + (a - num * 6) * priceW[2];
+    }
+
+    public static void initialPrice() {
+        try {
+            String sql = "Select * from hqtcsdl.BangThamSo";
+            Statement stmt = User.getConnection().createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
+            priceE = new int[5];
+            priceW = new int[3];
+            for (int i = 0; i < 5; i++) {
+                if (rs.next()) {
+                    priceE[i] = rs.getInt("GIADIEN");
+                }
+                if (i >= 3) {
+                    continue;
+                }
+                priceW[i] = rs.getInt("GIANUOC");
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(BillController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+    }
+
+    public static Bill showFullInfo(String IDBill) {
+        IDBill = IDBill.trim();
+        for (Bill b : arr) {
+            if (b.getIDBill().trim().equals(IDBill)) {
                 return b;
             }
         }
         return null;
     }
-    
-    @Override
-    public void delete(String billId) {
-        for (Bill b : list) {
-            if (b.getBillId().equals(billId)) {
-                list.remove(b);
-                return;
-            }
-        }
-    }
 
-    @Override
-    public String[] getHeader() {
-        return new String[]{
-            TITLE_NUMBER, TITLE_ID, TITLE_ROOM, TITLE_BUILDING,
-            TITLE_CREATED_DATE, TITLE_SUBMIT_DATE, TITLE_TYPE, TITLE_SUM
-        };
-    }
-
- 
-    @Override
-    public Vector<Object> toVector(Bill obj) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-    
-    /* DATABASE HANDLING METHODS
-    *  =========================================================================
-    */
-    
-    @Override
-    public void databaseUpdate(Bill b) throws SQLException {
+    public static boolean updateData(Bill b) {
         try {
             String sql = "Update hqtcsdl.HoaDon set "
-                    + "IDNhanVien = '" + b.getEmployee()
-                    + "', IDPhongO = '" + b.getRoom()
-                    + "', IDSinhVien = ?" + b.getStudent()
-                    + ", NgayLap = ?"
+                    + "IDNhanVien = '" + b.getIDEmployee()
+                    + "', IDPhongO = '" + b.getIDRoom()
+                    + "', IDSinhVien = '" + b.getIDStudent()
+                    + "', NgayLap = ?"
                     + ", NgayThu = ?"
-                    + " Where (IDHoaDon = '" + b.getBillId()
+                    + ", TriGia = ?"
+                    + ", GhiChu = ?"
+                    + " Where (IDHoaDon = '" + b.getIDBill()
                     + "')";
-            PreparedStatement ps = DatabaseController.getConnection().prepareCall(sql);
-            DatabaseController.getConnection().setAutoCommit(false);
-            ps.setDate(1, new Date(
-                    b.getCreatedDate().atStartOfDay(ZoneId.systemDefault())
-                                      .toInstant().toEpochMilli()
-            ));
-            ps.setDate(2, new Date(
-                    b.getSubmittedDate().atStartOfDay(ZoneId.systemDefault())
-                                        .toInstant().toEpochMilli()
-            ));
-            if (!ps.execute()) {
-                DatabaseController.getConnection().rollback();
-            } else {
-                DatabaseController.getConnection().commit();
+            PreparedStatement ps = User.getConnection().prepareCall(sql);
+            System.out.println(sql);
+            User.getConnection().setAutoCommit(false);
+            ps.setDate(1, new java.sql.Date(b.getInvoiceDate().getTime()));
+            ps.setDate(2, new java.sql.Date(b.getCollectionDate().getTime()));
+            ps.setInt(3, b.getValue());
+            ps.setString(4, b.getNote());
+            if (ps.executeUpdate() != 1) {
+                User.getConnection().rollback();
+                User.getConnection().setAutoCommit(true);
+                return false;
             }
+            if (!"Hóa đơn điện nước".equals(b.getKind())) {
+                User.getConnection().commit();
+                User.getConnection().setAutoCommit(true);
+                return true;
+            }
+            sql = "Update hqtcsdl.ChiTietDien set "
+                    + "NgayBatDau = ? "
+                    + ", NgayKetThuc = ?"
+                    + ", SoDau = ?"
+                    + ", SoCuoi = ?"
+                    + ", Tong = ? "
+                    + "Where (IDChiTietDien ='"
+                    + b.getIDElectric() + "')";
+            ps = User.getConnection().prepareCall(sql);
+            ps.setDate(1, new java.sql.Date(b.getStartDateE().getTime()));
+            ps.setDate(2, new java.sql.Date(b.getEndDateE().getTime()));
+            ps.setInt(3, b.getHeadNumE());
+            ps.setInt(4, b.getBotNumE());
+            ps.setInt(5, b.getSumE());
+            System.out.println(sql);
+            if (ps.executeUpdate() != 1) {
+                User.getConnection().rollback();
+                User.getConnection().setAutoCommit(true);
+                return false;
+            }
+            sql = "Update hqtcsdl.ChiTietNuoc set "
+                    + "NgayBatDau = ? "
+                    + ", NgayKetThuc = ?"
+                    + ", SoDau = ?"
+                    + ", SoCuoi = ?"
+                    + ", Tong = ? "
+                    + "Where (IDChiTietNuoc ='"
+                    + b.getIDWater() + "')";
+            ps = User.getConnection().prepareCall(sql);
+            ps.setDate(1, new java.sql.Date(b.getStartDateW().getTime()));
+            ps.setDate(2, new java.sql.Date(b.getEndDateW().getTime()));
+            ps.setInt(3, b.getHeadNumW());
+            ps.setInt(4, b.getBotNumW());
+            ps.setInt(5, b.getSumW());
+            System.out.println(sql);
+            if (ps.executeUpdate() != 1) {
+                User.getConnection().rollback();
+                User.getConnection().setAutoCommit(true);
+                return false;
+            }
+            User.getConnection().commit();
+            User.getConnection().setAutoCommit(true);
+            return true;
+        } catch (SQLException e) {
+            System.out.println("Lỗi truy vấn ở hóa đơn");
+            e.printStackTrace();
+            try {
+                User.getConnection().setAutoCommit(true);
+            } catch (SQLException ex) {
+                Logger.getLogger(BillController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            return false;
+        }
+    }
+
+    public static boolean delData(String IDBill) {
+        try {
+            String sql = "Delete hqtcsdl.ChiTietDien "
+                    + "where (IDHoaDon='"
+                    + IDBill
+                    + "')";
+            PreparedStatement ps = User.getConnection().prepareCall(sql);
+            User.getConnection().setAutoCommit(false);
+            ps.executeUpdate();
+            sql = "Delete hqtcsdl.ChiTietNuoc "
+                    + "where (IDHoaDon='"
+                    + IDBill
+                    + "')";
+            ps = User.getConnection().prepareCall(sql);
+            ps.executeUpdate();
+            sql = "Delete hqtcsdl.HoaDon "
+                    + "where (IDHoaDon='"
+                    + IDBill
+                    + "')";
+            ps = User.getConnection().prepareCall(sql);
+            if (ps.executeUpdate() != 1) {
+                User.getConnection().rollback();
+                User.getConnection().setAutoCommit(true);
+                return false;
+            }
+            User.getConnection().commit();
+            User.getConnection().setAutoCommit(true);
+            return true;
+
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            DatabaseController.getConnection().setAutoCommit(true);
+            return false;
         }
-        
     }
-    
-    @Override
-    public void databaseDelete(Bill b) throws SQLException {
-        String sql = "Delete hqtcsdl.HoaDon "
-                + "where (IDHoaDon='"
-                + b.getBillId()
-                + "')";
-        PreparedStatement ps = DatabaseController.getConnection().prepareCall(sql);
-        ps.execute();
+
+    private static String handleID(String head, int end, int length) {
+        String ID = head;
+        for (int i = head.length(); i < length - String.valueOf(end).length(); i++) {
+            ID += "0";
+        }
+        return ID + String.valueOf(end);
     }
-    
-    @SuppressWarnings("empty-statement")
-    @Override
-    public void databaseLoad() throws SQLException {
 
-        Statement stmt = DatabaseController.getConnection().createStatement();
-        ResultSet rs = stmt.executeQuery("Select h.IDHoaDon, h.IDNhanVien, h.IDPhongO, h.IDSinhVien, "
-                + "h.NgayLap, h.NgayThu, h.Loai, h.TriGia, h.GhiChu,\n"
-                + "d.IDChiTietDien, d.NgayBatDau, d.NgayKetThuc, d.SoDau, d.SoCuoi, d.Tong,\n"
-                + "n.IDChiTietNuoc, n.NgayBatDau, n.NgayKetThuc, n.SoDau, n.SoCuoi, n.Tong\n"
-                + "from HQTCSDL.HoaDon h left join HQTCSDL.ChiTietDien d\n"
-                + "on h.IDHoaDon= d.IDHoaDon left join HQTCSDL.ChiTietNuoc n\n"
-                + "on h.IDHoaDon = n.IDHoaDon "
-                + "order by h.IDHoaDon");
-        while (rs.next()) {
-            Bill b = new Bill();
-            b.setBillId(rs.getString("h.HOADON"));
-            b.setEmployee(rs.getString("h.IDNHANVIEN"));
-            b.setRoom(rs.getString("h.IDPHONGO"));
-            b.setStudent(rs.getString("h.IDSINHVIEN"));
-            b.setCreatedDate(rs.getDate("h.NGAYLAP").toLocalDate());
-            b.setSubmittedDate(rs.getDate("h.NGAYTHU").toLocalDate());
-            b.setType(rs.getString("h.Loai"));
-            b.setSum(rs.getInt("h.TRIGIA"));
-//                b.set(rs.getString("h.GHICHU"));
-            ElectricityReceipt er = new ElectricityReceipt();
-            er.setId(rs.getString("d.IDCHITIETDIEN"));
-            er.setStartDate(rs.getDate("d.NGAYBATDAU").toLocalDate());
-            er.setEndDate(rs.getDate("d.NGAYKETTHUC").toLocalDate());
-            er.setStartNumber(rs.getInt("d.SODAU"));
-            er.setEndNumber(rs.getInt("h.SOCUOI"));
-            er.setSum(rs.getInt("d.TONG"));
-            b.setElectricDetail(er);
-
-            WaterReceipt wr = new WaterReceipt();
-            wr.setId(rs.getString("n.IDCHITIETNUOC"));
-            wr.setStartDate(rs.getDate("n.NGAYBATDAU").toLocalDate());
-            wr.setEndDate(rs.getDate("n.NGAYKETTHUC").toLocalDate());
-            wr.setStartNumber(rs.getInt("n.SODAU"));
-            wr.setEndNumber(rs.getInt("n.SOCUOI"));
-            wr.setSum(rs.getInt("n.TONG"));
-            b.setWaterDetail(wr);
-
-            this.list.add(b);
-        };
-    }
-    
-    @Override
-    public void databaseInsert(Bill b) throws SQLException {
+    public static boolean insData(Bill b) {
         try {
-
-            String sql = "Insert into htqcsdl.HoaDon values('"
-                    + b.getBillId() + "','"
-                    + b.getEmployee() + "','"
-                    + b.getRoom() + "','"
-                    + b.getStudent() + "',"
+            String sql;
+            switch (b.getKind()) {
+                case "Hóa đơn điện nước":
+                    sql = "Select hqtcsdl.s_ID_HoaDonDienNuoc.nextval from dual";
+                    break;
+                case "Hóa đơn phòng":
+                    sql = "Select hqtcsdl.s_ID_HoaDonPhong.nextval from dual";
+                    break;
+                default:
+                    sql = "Select hqtcsdl.s_ID_HoaDon.nextval from dual";
+                    break;
+            }
+            Statement stmt = User.getConnection().createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
+            int tempNumID = 0;
+            while (rs.next()) {
+                tempNumID = rs.getInt(1);
+            }
+            String tempID;
+            switch (b.getKind()) {
+                case "Hóa đơn điện nước":
+                    tempID = handleID("HDDN", tempNumID, 12);
+                    break;
+                case "Hóa đơn phòng":
+                    tempID = handleID("HDP", tempNumID, 12);
+                    break;
+                default:
+                    tempID = handleID("HD", tempNumID, 12);
+                    break;
+            }
+            sql = "Insert into hqtcsdl.HoaDon values('"
+                    + tempID + "','"
+                    + b.getIDEmployee() + "','"
+                    + b.getIDRoom() + "','"
+                    + b.getIDStudent() + "',"
                     + "?," // Thêm ngày lập
                     + "?,'" // Thêm ngày thu
-                    + b.getType() + "',"
+                    + b.getKind() + "',"
                     + "?,'" // Thêm trị giá
-                    + ""
+                    + b.getNote()
                     + "')";
-            PreparedStatement ps = DatabaseController.getConnection().prepareStatement(sql);
-            DatabaseController.getConnection().setAutoCommit(false);
-            ps.setDate(1, new Date(
-                    b.getCreatedDate().atStartOfDay(ZoneId.systemDefault())
-                            .toInstant().toEpochMilli()
-            ));
-            ps.setDate(2, new Date(
-                    b.getSubmittedDate().atStartOfDay(ZoneId.systemDefault())
-                            .toInstant().toEpochMilli()
-            ));
-            ps.setInt(3, b.getSum());
+            PreparedStatement ps = User.getConnection().prepareStatement(sql);
+            User.getConnection().setAutoCommit(false);
+            ps.setDate(1, new java.sql.Date(b.getInvoiceDate().getTime()));
+            ps.setDate(2, new java.sql.Date(b.getCollectionDate().getTime()));
+            ps.setInt(3, b.getValue());
 
-            if (!ps.execute()) {
-                DatabaseController.getConnection().rollback();
-            } else {
-                DatabaseController.getConnection().commit();
+            if (ps.executeUpdate() != 1) {
+                User.getConnection().rollback();
+                User.getConnection().setAutoCommit(true);
+                return false;
             }
+            if (!"Hóa đơn điện nước".equals(b.getKind())) {
+
+                User.getConnection().commit();
+                User.getConnection().setAutoCommit(true);
+                return true;
+            }
+            sql = "Select hqtcsdl.s_ID_ChiTietDienNuoc.nextval from dual";
+            stmt = User.getConnection().createStatement();
+            rs = stmt.executeQuery(sql);
+            while (rs.next()) {
+                tempNumID = rs.getInt(1);
+            }
+            String tempIDElectric = handleID("D", tempNumID, 10);
+
+            sql = "Insert into hqtcsdl.ChiTietDien values('"
+                    + tempIDElectric + "','"
+                    + tempID + "',"
+                    + "?," // Ngày bắt đầu
+                    + "?," // Ngày kết thúc
+                    + "?," // Số đầu
+                    + "?," // Số cưới
+                    + "?)"; // Tổng
+            ps = User.getConnection().prepareStatement(sql);
+            ps.setDate(1, new java.sql.Date(b.getStartDateE().getTime()));
+            ps.setDate(2, new java.sql.Date(b.getEndDateE().getTime()));
+            ps.setInt(3, b.getHeadNumE());
+            ps.setInt(4, b.getBotNumE());
+            ps.setInt(5, b.getSumE());
+
+            if (ps.executeUpdate() != 1) {
+                User.getConnection().rollback();
+                User.getConnection().setAutoCommit(true);
+                return false;
+            }
+
+            String tempIDWater = handleID("N", tempNumID, 10);
+            sql = "Insert into hqtcsdl.ChiTietNuoc values('"
+                    + tempIDWater + "','"
+                    + tempID + "',"
+                    + "?," // Ngày bắt đầu
+                    + "?," // Ngày kết thúc
+                    + "?," // Số đầu
+                    + "?," // Số cưới
+                    + "?)"; // Tổng
+            ps = User.getConnection().prepareStatement(sql);
+            ps.setDate(1, new java.sql.Date(b.getStartDateW().getTime()));
+            ps.setDate(2, new java.sql.Date(b.getEndDateW().getTime()));
+            ps.setInt(3, b.getHeadNumW());
+            ps.setInt(4, b.getBotNumW());
+            ps.setInt(5, b.getSumW());
+
+            if (ps.executeUpdate() != 1) {
+                User.getConnection().rollback();
+                User.getConnection().setAutoCommit(true);
+                return false;
+            }
+            User.getConnection().commit();
+            User.getConnection().setAutoCommit(true);
+            return true;
         } catch (SQLException e) {
+            System.out.println("Lỗi câu truy vấn ở hóa đơn");
+            try {
+                User.getConnection().setAutoCommit(true);
+            } catch (SQLException ex) {
+                Logger.getLogger(BillController.class.getName()).log(Level.SEVERE, null, ex);
+            }
             e.printStackTrace();
-        } finally {
-            DatabaseController.getConnection().setAutoCommit(true);
+            return false;
         }
     }
 
+    public static void unSearch() {
+        filterModel = null;
+    }
+
+    public static void searchData(
+            String IDBill,
+            String IDEmployee,
+            String IDBuilding,
+            String numRoom,
+            String IDStudent,
+            String invoiceDate,
+            String collectionDate,
+            String kind,
+            String value,
+            String note) {
+        filterModel = new DefaultTableModel(new Object[]{
+            " ",
+            "Mã hóa đơn",
+            "Mã nhân viên",
+            "Mã tòa",
+            "Số phòng",
+            "Mã sinh viên",
+            "Ngày lập",
+            "Ngày thu",
+            "Loại",
+            "Trị giá",
+            "Ghi chú"}, 0) {
+            @Override
+            public Class getColumnClass(int columnIndex) {
+                switch (columnIndex) {
+                    case 0:
+                        return Boolean.class;
+                    case 6:
+                        return Date.class;
+                    case 7:
+                        return Date.class;
+                    case 8:
+                        return Integer.class;
+                    default:
+                        return String.class;
+                }
+            }
+
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return column == 0;
+            }
+        };
+        for (int i = 0; i < model.getRowCount(); i++) {
+            if (compareCloseTo(IDBill, model.getValueAt(i, 1).toString())
+                    && compareCloseTo(IDEmployee, model.getValueAt(i, 2).toString())
+                    && compareCloseTo(IDBuilding, model.getValueAt(i, 3).toString())
+                    && compareCloseTo(numRoom, model.getValueAt(i, 4).toString())
+                    && compareCloseTo(IDStudent, model.getValueAt(i, 5).toString())
+                    && compareCloseTo(invoiceDate, model.getValueAt(i, 6).toString())
+                    && compareCloseTo(collectionDate, model.getValueAt(i, 7).toString())
+                    && compareCloseTo(kind, model.getValueAt(i, 8).toString())
+                    && compareCloseTo(value, model.getValueAt(i, 9).toString())
+                    && compareCloseTo(note, model.getValueAt(i, 10).toString())) {
+                filterModel.addRow(new Object[]{
+                    true,
+                    model.getValueAt(i, 1),
+                    model.getValueAt(i, 2),
+                    model.getValueAt(i, 3),
+                    model.getValueAt(i, 4),
+                    model.getValueAt(i, 5),
+                    model.getValueAt(i, 6),
+                    model.getValueAt(i, 7),
+                    model.getValueAt(i, 8),
+                    model.getValueAt(i, 9),
+                    model.getValueAt(i, 10)
+                });
+            }
+        }
+    }
+
+    private static void addRowToModel(Bill b) {
+        model.addRow(b.toObject(false));
+        if (filterModel != null) {
+            filterModel.addRow(b.toObject(false));
+        }
+    }
+
+    private static void removeRowFromModel(String IDBill) {
+        // Chuỗi truyền vào 99,99% là đúng nên có thể dùng hàm só sánh gần đúng
+        for (int i = 0; i < model.getRowCount(); i++) {
+            if (compareCloseTo(model.getValueAt(i, 1).toString(), IDBill)) {
+                model.removeRow(i);
+                // Nếu đang trạng thái tìm kiếm thì cũng xóa ở cả kết quả tìm kiếm luôn
+                if (filterModel == null) {
+                    return;
+                } else {
+                    for (int j = 0; j < filterModel.getRowCount(); j++) {
+                        if (compareCloseTo(filterModel.getValueAt(j, 1).toString(), IDBill)) {
+                            filterModel.removeRow(j);
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private static boolean compareCloseTo(String subString, String containString) {
+        // Nếu chuỗi con null --> Tìm với mọi kết quả
+        if (subString == null) {
+            return true;
+        }
+        // Chuỗi mẹ null --> thoát
+        if (containString == null) {
+            return false;
+        }
+        // Xử lí UpCase với trim để được chuỗi phù hợp nhất
+        containString = containString.trim();
+        containString = containString.toUpperCase();
+        subString = subString.trim();
+        subString = subString.toUpperCase();
+
+        // Trả về kết quả chuỗi con nằm ? thuộc chuỗi mẹ 
+        return containString.contains(subString);
+    }
+
+    public static DefaultTableModel getFilterModel() {
+        return filterModel;
+    }
+
+    public static DefaultTableModel getModel() {
+        return model;
+    }
+
+    public static void initialModel() {
+        model = new DefaultTableModel(new Object[]{
+            " ",
+            "Mã hóa đơn",
+            "Mã nhân viên",
+            "Mã tòa",
+            "Số phòng",
+            "Mã sinh viên",
+            "Ngày lập",
+            "Ngày thu",
+            "Loại",
+            "Trị giá",
+            "Ghi chú"}, 0) {
+            @Override
+            public Class getColumnClass(int columnIndex) {
+                switch (columnIndex) {
+                    case 0:
+                        return Boolean.class;
+                    case 6:
+                        return Date.class;
+                    case 7:
+                        return Date.class;
+                    case 8:
+                        return Integer.class;
+                    default:
+                        return String.class;
+                }
+            }
+
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return column == 0;
+            }
+        };
+        arr.forEach(b -> {
+            model.addRow(b.toObject(false));
+        });
+    }
+
+    @SuppressWarnings("empty-statement")
+    public static void initialData() {
+        try {
+            arr = new ArrayList<>();
+            Statement stmt = User.getConnection().createStatement();
+            ResultSet rs = stmt.executeQuery("Select h.IDHoaDon, h.IDNhanVien, h.IDPhongO, h.IDSinhVien, \n"
+                    + "h.NgayLap, h.NgayThu, h.Loai, h.TriGia, h.GhiChu,\n"
+                    + "d.IDChiTietDien, d.NgayBatDau, d.NgayKetThuc, d.SoDau, d.SoCuoi, d.Tong,\n"
+                    + "n.IDChiTietNuoc, n.NgayBatDau as \"NBDN\", n.NgayKetThuc as \"NKTN\",\n"
+                    + "n.SoDau as \"SDN\", n.SoCuoi as \"SCN\", n.Tong  as \"TN\"\n"
+                    + "from HQTCSDL.HoaDon h left join HQTCSDL.ChiTietDien d\n"
+                    + "on h.IDHoaDon= d.IDHoaDon left join HQTCSDL.ChiTietNuoc n\n"
+                    + "on h.IDHoaDon = n.IDHoaDon \n"
+                    + "order by h.IDHoaDon");
+            while (rs.next()) {
+                Bill b = new Bill();
+                b.setIDBill(rs.getString("IDHOADON"));
+                b.setIDEmployee(rs.getString("IDNHANVIEN"));
+                b.setIDRoom(rs.getString("IDPHONGO"));
+                b.setIDStudent(rs.getString("IDSINHVIEN"));
+                b.setInvoiceDate(rs.getDate("NGAYLAP"));
+                b.setCollectionDate(rs.getDate("NGAYTHU"));
+                b.setKind(rs.getString("LOai"));
+                b.setValue(rs.getInt("TRIGIA"));
+                b.setNote(rs.getString("GHICHU"));
+
+                b.setIDElectric(rs.getString("IDCHITIETDIEN"));
+                b.setStartDateE(rs.getDate("NGAYBATDAU"));
+                b.setEndDateE(rs.getDate("NGAYKETTHUC"));
+                b.setHeadNumE(rs.getInt("SODAU"));
+                b.setBotNumE(rs.getInt("SOCUOI"));
+                b.setSumE(rs.getInt("TONG"));
+
+                b.setIDWater(rs.getString("IDCHITIETNUOC"));
+                b.setStartDateW(rs.getDate("NBDN"));
+                b.setEndDateW(rs.getDate("NKTN"));
+                b.setHeadNumW(rs.getInt("SDN"));
+                b.setBotNumW(rs.getInt("SCN"));
+                b.setSumW(rs.getInt("TN"));
+                arr.add(b);
+            };
+        } catch (SQLException e) {
+            System.out.println("Lỗi câu truy vấn ở hóa đơn");
+            e.printStackTrace();
+        }
+    }
 }
