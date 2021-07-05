@@ -1,0 +1,961 @@
+/*==============================================================*/
+/* DBMS name:      ORACLE Version 12c                           */
+/* Created on:     7/1/2021 4:06:02 PM                          */
+/*==============================================================*/
+
+
+alter table CHITIETDIEN
+   drop constraint FK_CHITIETD_DIEN2_HOADON;
+
+alter table CHITIETNUOC
+   drop constraint FK_CHITIETN_NUOC2_HOADON;
+
+alter table HOADON
+   drop constraint FK_HOADON_CO_PHONGO;
+
+alter table HOADON
+   drop constraint FK_HOADON_LAP_NHANVIEN;
+
+alter table HOADON
+   drop constraint FK_HOADON_THANHTOAN_SINHVIEN;
+
+alter table NHANVIEN
+   drop constraint FK_NHANVIEN_LAM_THONGTIN;
+
+alter table NHANVIEN
+   drop constraint FK_NHANVIEN_QUANLI2_PHONGNHA;
+
+alter table NHANVIEN
+   drop constraint FK_NHANVIEN_THUOC_PHONGNHA;
+
+alter table PHONGNHANVIEN
+   drop constraint FK_PHONGNHA_QUANLI_NHANVIEN;
+
+alter table PHONGO
+   drop constraint FK_PHONGO_BAOGOM_TOA;
+
+alter table SINHVIEN
+   drop constraint FK_SINHVIEN_HOC_TRUONG;
+
+alter table SINHVIEN
+   drop constraint FK_SINHVIEN_LA_THONGTIN;
+
+alter table SINHVIEN
+   drop constraint FK_SINHVIEN_O_PHONGO;
+
+alter table TOA
+   drop constraint FK_TOA_TRUONGTOA_NHANVIEN;
+
+drop table BANGTHAMSO cascade constraints;
+
+drop table CHITIETDIEN cascade constraints;
+
+drop table CHITIETNUOC cascade constraints;
+
+drop table HOADON cascade constraints;
+
+drop table NHANVIEN cascade constraints;
+
+drop table PHONGNHANVIEN cascade constraints;
+
+drop table PHONGO cascade constraints;
+
+drop table SINHVIEN cascade constraints;
+
+drop table THONGTINCOBAN cascade constraints;
+
+drop table TOA cascade constraints;
+
+drop table TRUONG cascade constraints;
+
+/*==============================================================*/
+/* Table: BANGTHAMSO                                            */
+/*==============================================================*/
+create table BANGTHAMSO (
+   GIADIEN              NUMBER,
+   GIANUOC              NUMBER
+);
+
+/*==============================================================*/
+/* Table: CHITIETDIEN                                           */
+/*==============================================================*/
+create table CHITIETDIEN (
+   IDCHITIETDIEN        CHAR(10)              not null,
+   IDHOADON             CHAR(12)              not null,
+   NGAYBATDAU           DATE,
+   NGAYKETTHUC          DATE,
+   SODAU                INTEGER,
+   SOCUOI               INTEGER,
+   TONG                 NUMBER,
+   constraint PK_CHITIETDIEN primary key (IDCHITIETDIEN)
+);
+
+/*==============================================================*/
+/* Table: CHITIETNUOC                                           */
+/*==============================================================*/
+create table CHITIETNUOC (
+   IDCHITIETNUOC        CHAR(10)              not null,
+   IDHOADON             CHAR(12)              not null,
+   NGAYBATDAU           DATE,
+   NGAYKETTHUC          DATE,
+   SODAU                INTEGER,
+   SOCUOI               INTEGER,
+   TONG                 NUMBER,
+   constraint PK_CHITIETNUOC primary key (IDCHITIETNUOC)
+);
+
+/*==============================================================*/
+/* Table: HOADON                                                */
+/*==============================================================*/
+create table HOADON (
+   IDHOADON             CHAR(12)              not null,
+   IDNHANVIEN           CHAR(5)               not null,
+   IDPHONGO             CHAR(8)               not null,
+   IDSINHVIEN           CHAR(10)              not null,
+   NGAYLAP              DATE,
+   NGAYTHU              DATE,
+   LOAI                 CHAR(30),
+   TRIGIA               NUMBER,
+   GHICHU               VARCHAR2(30),
+   constraint PK_HOADON primary key (IDHOADON)
+);
+
+/*==============================================================*/
+/* Table: NHANVIEN                                              */
+/*==============================================================*/
+create table NHANVIEN (
+   IDNHANVIEN           CHAR(5)               not null,
+   IDPHONGNHANVIEN      CHAR(4),
+   QUANLIPHONG          CHAR(4),
+   ID                   CHAR(10)              not null,
+   NGAYVAOLAM           DATE,
+   TRANGTHAI            NUMBER(1),
+   constraint PK_NHANVIEN primary key (IDNHANVIEN)
+);
+
+/*==============================================================*/
+/* Table: PHONGNHANVIEN                                         */
+/*==============================================================*/
+create table PHONGNHANVIEN (
+   IDPHONGNHANVIEN      CHAR(4)               not null,
+   IDQUANLI          CHAR(5),
+   TENPHONG             VARCHAR2(30),
+   VITRI                VARCHAR2(20),
+   constraint PK_PHONGNHANVIEN primary key (IDPHONGNHANVIEN)
+);
+
+/*==============================================================*/
+/* Table: PHONGO                                                */
+/*==============================================================*/
+create table PHONGO (
+   IDPHONGO             CHAR(8)               not null,
+   IDTOA                CHAR(4)               not null,
+   COSOVATCHAT          VARCHAR2(100),
+   LOAIPHONG            VARCHAR2(10),
+   SONGUOIO             NUMBER(1),
+   CONTRONG             NUMBER(1),
+   constraint PK_PHONGO primary key (IDPHONGO)
+);
+
+/*==============================================================*/
+/* Table: SINHVIEN                                              */
+/*==============================================================*/
+create table SINHVIEN (
+   IDSINHVIEN           CHAR(10)              not null,
+   ID                   CHAR(10)              not null,
+   IDPHONGO             CHAR(8),
+   IDTRUONG             CHAR(10),
+   NGAYVAO              DATE,
+   NGAYHETHAN           DATE,
+   TRANGTHAI            NUMBER(1),
+   constraint PK_SINHVIEN primary key (IDSINHVIEN)
+);
+
+/*==============================================================*/
+/* Table: THONGTINCOBAN                                         */
+/*==============================================================*/
+create table THONGTINCOBAN (
+   ID                   CHAR(10)              not null,
+   HO                   NVARCHAR2(30),
+   TEN                  NVARCHAR2(10),
+   DIACHI               VARCHAR2(100),
+   GIOITINH             NUMBER(1),
+   NGAYSINH             DATE,
+   SDT                  CHAR(11),
+   EMAIL                VARCHAR2(50),
+   CMND                 CHAR(12),
+   QUOCTICH             CHAR(30),
+   DANTOC               VARCHAR2(25),
+   BHYT                 CHAR(16),
+   TENTHANNHAN          NVARCHAR2(40),
+   SDTTHANNHAN          CHAR(11),
+   DIACHITHANNHAN       VARCHAR2(100),
+   HINHANH              BLOB,
+   constraint PK_THONGTINCOBAN primary key (ID),
+   constraint "Unique_CMND" unique (CMND)
+);
+
+/*==============================================================*/
+/* Table: TOA                                                   */
+/*==============================================================*/
+create table TOA (
+   IDTOA                CHAR(4)               not null,
+   IDNHANVIEN           CHAR(5)               not null,
+   TENTOA               VARCHAR2(15),
+   LOAITOA              NUMBER(1),
+   constraint PK_TOA primary key (IDTOA)
+);
+
+/*==============================================================*/
+/* Table: TRUONG                                                */
+/*==============================================================*/
+create table TRUONG (
+   IDTRUONG             CHAR(10)              not null,
+   TENTRUONG            VARCHAR2(50),
+   constraint PK_TRUONG primary key (IDTRUONG)
+);
+drop sequence s_ID_SinhVien;
+create sequence s_ID_SinhVien
+increment by 1
+start with 10120
+maxvalue 9999999999
+nocycle
+nocache 
+order;
+
+drop sequence s_ID_NhanVien;
+create sequence s_ID_NhanVien
+increment by 1
+start with 22
+maxvalue 9999
+nocycle
+nocache 
+order;
+
+drop sequence s_ID_HoaDonDienNuoc;
+create sequence s_ID_HoaDonDienNuoc
+increment by 1
+start with 21
+NoMaxValue
+nocycle
+nocache 
+order;
+
+drop sequence s_ID_HoaDon;
+create sequence s_ID_HoaDon
+increment by 1
+start with 1
+NoMaxValue
+nocycle
+nocache 
+order;
+
+drop sequence s_ID_HoaDonPhong;
+create sequence s_ID_HoaDonPhong
+increment by 1
+start with 6
+NoMaxValue
+nocycle
+nocache 
+order;
+
+drop sequence s_ID_ChiTietDienNuoc;
+create sequence s_ID_ChiTietDienNuoc
+increment by 1
+start with 21
+NoMaxValue
+nocycle
+nocache 
+order;
+-- Cai nay de loai bo phan c## trong username
+-- ALTER SESSION SET "_ORACLE_SCRIPT" = true;
+
+ALTER SESSION SET NLS_DATE_FORMAT = 'MM DD YYYY';
+
+drop role r_SinhVien;
+create role r_SinhVien;
+grant connect to r_SinhVien;
+grant select on ThongTinCoBan to r_SinhVien;
+grant select on SinhVien to r_SinhVien;
+grant select on Truong to r_SinhVien;
+grant select on Toa to r_SinhVien;
+grant select on PhongO to r_SinhVien;
+grant select on ChiTietDien to r_SinhVien;
+grant select on ChiTietNuoc to r_SinhVien;
+grant select on HoaDon to r_SinhVien;
+
+drop role r_QuanLiPhongNhanVien;
+create role r_QuanLiPhongNhanVien;
+grant select, update, delete on ThongTinCoBan to r_QuanLiPhongNhanVien;
+grant select, update, delete on PhongNhanVien to r_QuanLiPhongNhanVien;
+grant select, update, delete on NhanVien to r_QuanLiPhongNhanVien;
+grant select, update, delete on HoaDon to r_QuanLiPhongNhanVien;
+grant select, update, delete on ChiTietDien to r_QuanLiPhongNhanVien;
+grant select, update, delete on ChiTietNuoc to r_QuanLiPhongNhanVien;
+grant select on BangThamSo to r_QuanLiPhongNhanVien;
+grant select on SinhVien to r_QuanLiPhongNhanVien;
+grant select on Toa to r_QuanLiPhongNhanVien;
+grant select on Truong to r_QuanLiPhongNhanVien;
+grant select on PhongO to r_QuanLiPhongNhanVien;
+GRANT CREATE USER TO r_QuanLiPhongNhanVien;
+GRANT DROP USER TO r_QuanLiPhongNhanVien;
+GRANT GRANT ANY ROLE TO r_QuanLiPhongNhanVien;
+grant create session to r_QuanLiPhongNhanVien;
+
+drop role r_TruongToa;
+create role r_TruongToa;
+grant connect to r_TruongToa;
+grant select, update, delete on ThongTinCoBan to r_TruongToa;
+grant select, update, delete on HoaDon to r_TruongToa;
+grant select, update, delete on ChiTietDien to r_TruongToa;
+grant select, update, delete on ChiTietNuoc to r_TruongToa;
+grant select, update, delete on SinhVien to r_TruongToa;
+grant select, update, delete on PhongO to r_TruongToa;
+grant select on BangThamSo to r_TruongToa;
+grant select on NhanVien to r_TruongToa;
+grant select on PhongNhanVien to r_TruongToa;
+grant select on Toa to r_TruongToa;
+grant select on Truong to r_TruongToa;
+grant select on PhongO to r_TruongToa;
+GRANT CREATE USER TO r_TruongToa;
+GRANT DROP USER TO r_TruongToa;
+GRANT GRANT ANY ROLE TO r_TruongToa;
+grant create session to r_TruongToa;
+
+drop role r_BanQuanLi;
+create role r_BanQuanLi;
+grant connect, dba, resource, oem_monitor to r_BanQuanLi;
+grant create session to r_BanQuanLi;
+
+
+Insert into ThongTinCoBan values('0','Đồng Quang','Quý','Phù Cát, Bình Định','0','09/28/1994','0734597913','quydq@gmail.com','242484989','Việt Nam','Khmer','DN1544567890007','Quyên','0612513532','Phù Cát, Bình Định',null);
+Insert into ThongTinCoBan values('1','Đồng Quang ','Quyền','Phù Cát, Bình Định','0','05/04/1989','0148297125','quyendq@yahoo.com','273078851','Việt Nam','Rơ Măm','DN1644567190206','Khẩn','0631986239','Phù Cát, Bình Định',null);
+Insert into ThongTinCoBan values('2','Trần Quang','Khả','Quảng Ngãi','0','06/15/1994','0352648147','khatq@gmail.com','266949452','Việt Nam','Giẻ-Triêng','DN2778456783210','Ðức','0276124080','Quảng Ngãi',null);
+Insert into ThongTinCoBan values('3','Huỳnh Anh','Kiệt','Bến Tre','0','05/06/1986','0140136263','kietha@ui.edu.vn','209625763','Việt Nam','Khmer','DN3223086181010','Giác','0283160920','Bến Tre',null);
+Insert into ThongTinCoBan values('4','Hà Hoàng','Giang','Bắc Ninh','0','09/06/1990','0201380725','gianghh@gmail.com','000987593843','Việt Nam','Thổ','DN5309793159241','Nông','0231389866','Bắc Ninh',null);
+Insert into ThongTinCoBan values('5','Nguyễn','Khiêm','Vĩnh Long','0','04/04/1988','0544370519','khiemn@hcmut.edu.vn','223095811','Việt Nam','Hrê','DN7618387318529','Hách','0962850017','Vĩnh Long',null);
+Insert into ThongTinCoBan values('6','Phan Thị','Tuyết','Đồng Nai','1','09/09/1995','0214844358','10006@ktx.com','000118471847','Việt Nam','Brâu','DN2790117562348','San','0758888961','Đồng Nai',null);
+Insert into ThongTinCoBan values('7','Nguyễn Uy','Hưu','Yên Bái','0','07/13/1992','0245162837','10007@ktx.com','000177089324','Việt Nam','Kháng','DN4246213775839','Hai','0713547196','Yên Bái',null);
+Insert into ThongTinCoBan values('8','Hoàng Thị','Ơn','Bắc Giang','1','08/28/1991','0971532817','10008@ktx.com','000481186979','Việt Nam','Bố Y','DN6552867226436','Di','0922902227','Bắc Giang',null);
+Insert into ThongTinCoBan values('9','Trần Huy','Tá','Hòa Bình','0','11/11/1990','0435597393','10009@ktx.com','000853251374','Việt Nam','Pu Péo','DN1754108752560','Toa','0281300972','Hòa Bình',null);
+Insert into ThongTinCoBan values('10','Nguyễn Quang','Huệ','Đà Nẵng','0','09/25/1998','0143122824','10010@ktx.com','000445764774','Việt Nam','Si La','DN3786667097055','Hoá','0737718481','Đà Nẵng',null);
+Insert into ThongTinCoBan values('11','Hoàng Hữu','Khoả','Bà rịa – Vũng tàu','0','08/09/1999','0555173313','10011@ktx.com','000620336992','Việt Nam','Ra Glai','DN8206158099821','Hạ','0805102902','Bà rịa – Vũng tàu',null);
+Insert into ThongTinCoBan values('12','Vũ Quang','Luận','Bình Phước','0','03/30/1985','0480637873','10012@ktx.com','000778480162','Việt Nam','Ơ Đu','DN2782906207649','Thư','0906638068','Bình Phước',null);
+Insert into ThongTinCoBan values('13','Trần Long','Nhàn','Tuyên Quang','0','10/03/1998','0311530750','10013@ktx.com','000272153740','Việt Nam','Ơ Đu','DN7964234674699','Sung','0575178414','Tuyên Quang',null);
+Insert into ThongTinCoBan values('14','Hồ Huy','Tuyển','Bắc Ninh','0','11/18/1997','0618656565','10014@ktx.com','000847764502','Việt Nam','Ê Đê','DN1539893016716','Ðàm','0489395079','Bắc Ninh',null);
+Insert into ThongTinCoBan values('15','Huỳnh Nhật','Khai','Bà rịa – Vũng tàu','0','06/20/1993','0283141886','10015@ktx.com','000408311055','Việt Nam','Pu Péo','DN8136353909889','Khuyết','0929803904','Bà rịa – Vũng tàu',null);
+Insert into ThongTinCoBan values('16','Vũ Hữu','Vĩnh','Bình Phước','0','08/25/1999','0318376990','10016@ktx.com','000487205081','Việt Nam','La Ha','DN5412161731647','Thận','0465894380','Bình Phước',null);
+Insert into ThongTinCoBan values('17','Đỗ Hữu','Ðoá','Thanh Hóa','0','05/15/1988','0599303848','10017@ktx.com','000795496070','Việt Nam','Giáy','DN5120263819607','La','0361974910','Thanh Hóa',null);
+Insert into ThongTinCoBan values('18','Bùi Huy','Bài','Hà Nam','0','10/27/1989','0700034323','10018@ktx.com','000315403684','Việt Nam','Chu Ru','DN8098646233045','Thoại','0853405606','Hà Nam',null);
+Insert into ThongTinCoBan values('19','Bùi Nhật','Luân','Đà Nẵng','0','12/01/1991','0463713041','10019@ktx.com','000186943592','Việt Nam','Nùng','DN9637336049935','Hạc','0931407114','Đà Nẵng',null);
+Insert into ThongTinCoBan values('20','Trần Thị','Vũ','Tây Ninh','1','05/17/1989','0598057914','10020@ktx.com','000837442149','Việt Nam','Kháng','DN2491792682580','Văn','0523856861','Tây Ninh',null);
+Insert into ThongTinCoBan values('10000','Hoàng Đình','Phú','Đăk Lăk','0','02/10/2001','0132140912','19520838@gm.uit.edu.vn','241819304','Việt Nam','Thái','SV4456975074213','Bồng','0832381055','Đăk Lăk',null);
+Insert into ThongTinCoBan values('10001','Văn Quốc','Trịnh','Gia Lai','0','03/20/2000','0399158251','18521538@ms.uit.edu.vn','219460447','Việt Nam','Ê Đê','SV5073919520815','Phương','0132914373','Gia Lai',null);
+Insert into ThongTinCoBan values('10002','Trương Nguyễn Trường','Duy','Long An','0','04/10/2001','0452719179','19521437@ms.uit.edu.vn','000356630234','Việt Nam','Ngái','SV5690863967416','Huyện','0304409831','Long An',null);
+Insert into ThongTinCoBan values('10003','Đặng Hữu','Chương','Quảng Nam','0','07/19/1998','0809389120','16521495@gm.uit.edu.vn','000893367768','Việt Nam','Si La','SV3223086181010','Vui','0440709540','Quảng Nam',null);
+Insert into ThongTinCoBan values('10004','Phạm Quốc','Hùng','TP.Hồ Chí Minh','0','07/20/2001','0452950002','19521579@gm.uit.edu.vn','000443953197','Việt Nam','Mảng','SV3840030627612','Nhiên','0849687968','TP.Hồ Chí Minh',null);
+Insert into ThongTinCoBan values('10005','Trần Huy','Công','Lào Cai','0','08/01/2001','0307783714','20005@sv.ktx.com','000324744491','Việt Nam','Bru - Vân Kiều','SV3437723261788','Toại','0597525001','Lào Cai',null);
+Insert into ThongTinCoBan values('10006','Hoàng Thị','Vị','Ninh Bình','1','03/30/2000','0811892201','20006@sv.ktx.com','000661970328','Việt Nam','Co','SV9382826695457','Chuyên','0696528594','Ninh Bình',null);
+Insert into ThongTinCoBan values('10007','Huỳnh Huy','Kế','An Giang','0','02/25/1999','0866875719','20007@sv.ktx.com','000308369250','Việt Nam','Nùng','SV8284055917168','Ðiều','0943306229','An Giang',null);
+Insert into ThongTinCoBan values('10008','Hồ Long','Trấn','Bà rịa – Vũng tàu','0','03/28/1998','0456079921','20008@sv.ktx.com','000457472493','Việt Nam','La Hủ','SV6654852827174','Thí','0894732360','Bà rịa – Vũng tàu',null);
+Insert into ThongTinCoBan values('10009','Huỳnh Hữu','Phiên','Quảng Nam','0','06/01/1999','0789759811','20009@sv.ktx.com','000118271647','Việt Nam','Stiêng','SV9001778346835','Uỷ','0181740021','Quảng Nam',null);
+Insert into ThongTinCoBan values('10010','Lê Huy','Lãm','Vĩnh Phúc','0','11/22/2001','0253527171','20010@sv.ktx.com','000863450445','Việt Nam','La Hủ','SV5506776498824','Trợ','0246538722','Vĩnh Phúc',null);
+Insert into ThongTinCoBan values('10011','Hồ Long','Hồi','Ninh Bình','0','06/06/1999','0398548437','20011@sv.ktx.com','000357722027','Việt Nam','Ra Glai','SV7639956097590','Canh','0180823596','Ninh Bình',null);
+Insert into ThongTinCoBan values('10012','Bùi Hữu','Trạch','Phú Yên','0','12/19/1998','0639816008','20012@sv.ktx.com','000422776719','Việt Nam','Sán Chay','SV5421178902414','Cổ','0846075929','Phú Yên',null);
+Insert into ThongTinCoBan values('10013','Vũ Nhật','Thống','Quảng Nam','0','12/03/2001','0509115000','20013@sv.ktx.com','000576902097','Việt Nam','Cơ Ho','SV4756019850897','Trâm','0402678863','Quảng Nam',null);
+Insert into ThongTinCoBan values('10014','Trần Thị','Hoạnh','Lai Châu','1','08/22/1998','0117111575','20014@sv.ktx.com','000200794120','Việt Nam','Giáy','SV7204971367559','Ngô','0160203923','Lai Châu',null);
+Insert into ThongTinCoBan values('10015','Vũ Thị','Diệm','Ninh Bình','1','03/17/2001','0314635463','20015@sv.ktx.com','000470576607','Việt Nam','Sán Dìu','SV2764710818876','Bàng','0267059441','Ninh Bình',null);
+Insert into ThongTinCoBan values('10016','Hồ Uy','Truyền','Kon Tum','0','08/04/1999','0355986481','20016@sv.ktx.com','000598815192','Việt Nam','Ê Đê','SV4420945850660','Hanh','0571348493','Kon Tum',null);
+Insert into ThongTinCoBan values('10017','Phan Long','Tế','Lào Cai','0','04/29/2002','0220548096','20017@sv.ktx.com','000725930110','Việt Nam','Brâu','SV8487210188824','Phiên','0942004178','Lào Cai',null);
+Insert into ThongTinCoBan values('10018','Huỳnh Huy','Vui','Quảng Ninh','0','05/24/1998','0294112405','20018@sv.ktx.com','000915426713','Việt Nam','Brâu','SV5691688594740','Huân','0620193932','Quảng Ninh',null);
+Insert into ThongTinCoBan values('10019','Hồ Hữu','Quyết','Tiền Giang','0','08/15/1998','0740713412','20019@sv.ktx.com','000867486974','Việt Nam','Bố Y','SV5444438560880','Nghiêm','0185802497','Tiền Giang',null);
+Insert into ThongTinCoBan values('10020','Vũ Huy','Phùng','Hà Nội ','0','05/14/2001','0904843137','20020@sv.ktx.com','000294608388','Việt Nam','Phù Lá','SV2196150380791','Kỷ','0207345284','Hà Nội ',null);
+Insert into ThongTinCoBan values('10021','Bùi Văn','Ban','Thái Nguyên','0','09/26/2002','0905922058','20021@sv.ktx.com','000267010721','Việt Nam','Dao','SV7078419545243','Dẫn','0376737752','Thái Nguyên',null);
+Insert into ThongTinCoBan values('10022','Đỗ Thái','Phóng','Ninh Thuận','0','01/08/2002','0544216410','20022@sv.ktx.com','000530237700','Việt Nam','Brâu','SV7092223819979','Bôn','0365732744','Ninh Thuận',null);
+Insert into ThongTinCoBan values('10023','Hồ Đình','Ðàm','Đà Nẵng','0','10/12/2002','0204851855','20023@sv.ktx.com','000233484788','Việt Nam','Mường','SV2229228775728','Thôi','0669092500','Đà Nẵng',null);
+Insert into ThongTinCoBan values('10024','Vũ Quang','Oánh','Đồng Tháp','0','06/25/1999','0702849778','20024@sv.ktx.com','000899649899','Việt Nam','Cơ Ho','SV5890976455108','Hiền','0170538374','Đồng Tháp',null);
+Insert into ThongTinCoBan values('10025','Nguyễn Anh','Chước','Thái Bình','0','01/12/1998','0807947512','20025@sv.ktx.com','000641227122','Việt Nam','Lự','SV1233656577868','Nghiêm','0168579758','Thái Bình',null);
+Insert into ThongTinCoBan values('10026','Đỗ Thị','Ðãi','Quảng Nam','1','06/26/2002','0787033343','20026@sv.ktx.com','000499220442','Việt Nam','Sán Dìu','SV1458067188244','Dinh','0242350713','Quảng Nam',null);
+Insert into ThongTinCoBan values('10027','Dương Huy','Nhạc','Bình Dương','0','08/08/2000','0343596768','20027@sv.ktx.com','000382938394','Việt Nam','La Chí','SV1073056631613','Thụ','0910515571','Bình Dương',null);
+Insert into ThongTinCoBan values('10028','Đỗ Huy','Siêu','Thành phố Hồ Chí Minh','0','11/07/2000','0217633115','20028@sv.ktx.com','000481610131','Việt Nam','Giẻ-Triêng','SV5836735957090','Cựu','0791194587','Thành phố Hồ Chí Minh',null);
+Insert into ThongTinCoBan values('10029','Bùi Long','Lài','Quảng Ninh','0','09/11/1998','0451300457','20029@sv.ktx.com','000470664830','Việt Nam','Sán Chay','SV9748760424408','Vệ','0462761367','Quảng Ninh',null);
+Insert into ThongTinCoBan values('10030','Lý Huy','Quyến','Quảng Nam','0','09/10/2000','0931935036','20030@sv.ktx.com','000112129530','Việt Nam','Người Bahnar','SV8394796367839','Tình','0920681565','Quảng Nam',null);
+Insert into ThongTinCoBan values('10031','Hoàng Văn','Tỵ','Cần Thơ','0','11/19/2000','0339266133','20031@sv.ktx.com','000865525797','Việt Nam','Pà Thẻn','SV2261989062275','Ơn','0976018837','Cần Thơ',null);
+Insert into ThongTinCoBan values('10032','Hoàng Văn','Tỵ','Hưng Yên','0','12/07/2002','0979964412','20032@sv.ktx.com','000392432301','Việt Nam','Dao','SV1354439609085','Tường','0421609537','Hưng Yên',null);
+Insert into ThongTinCoBan values('10033','Đỗ Đình','Ơn','Ninh Thuận','0','12/24/1999','0459468535','20033@sv.ktx.com','000740600881','Việt Nam','Rơ Măm','SV9294311917420','Trai','0872518915','Ninh Thuận',null);
+Insert into ThongTinCoBan values('10034','Võ Huy','Hạng','Hải Phòng','0','04/11/2000','0116587837','20034@sv.ktx.com','000909448571','Việt Nam','Mạ','SV1475662703674','Ðơn','0914153156','Hải Phòng',null);
+Insert into ThongTinCoBan values('10035','Lý Thái','Hạo','Phú Thọ','0','09/14/2001','0802954808','20035@sv.ktx.com','000494804741','Việt Nam','Giáy','SV4432860641979','Chúc','0603079599','Phú Thọ',null);
+Insert into ThongTinCoBan values('10036','Đặng Huy','Bộc','Bắc Kạn','0','04/29/2000','0280693905','20036@sv.ktx.com','000243550483','Việt Nam','Chu Ru','SV7196739919597','Mộc','0432310552','Bắc Kạn',null);
+Insert into ThongTinCoBan values('10037','Vũ Thị','Mầu','Hà Nội ','1','11/03/2001','0609239605','20037@sv.ktx.com','000598401800','Việt Nam','Kinh','SV1802632500873','Thoa','0799825405','Hà Nội ',null);
+Insert into ThongTinCoBan values('10038','Vũ Nhật','Liễu','Đắk Lắk','0','03/24/1998','0402301887','20038@sv.ktx.com','000710241051','Việt Nam','Lô Lô','SV1729429560243','Ðàm','0516677583','Đắk Lắk',null);
+Insert into ThongTinCoBan values('10039','Phạm Thái','Nhẫn','Tây Ninh','0','01/23/1998','0808252816','20039@sv.ktx.com','000181372459','Việt Nam','Hà Nhì','SV6756787915440','Trai','0219238276','Tây Ninh',null);
+Insert into ThongTinCoBan values('10040','Lý Anh','Ngạn','Tiền Giang','0','05/25/2002','0176754093','20040@sv.ktx.com','000965227390','Việt Nam','Ê Đê','SV3972160305220','Toán','0719761835','Tiền Giang',null);
+Insert into ThongTinCoBan values('10041','Dương Quang','San','Hậu Giang','0','03/05/2001','0240478518','20041@sv.ktx.com','000656465483','Việt Nam','Si La','SV9163021930432','Xá','0727869875','Hậu Giang',null);
+Insert into ThongTinCoBan values('10042','Hoàng Nhật','Tám','Gia Lai','0','08/20/2001','0787610185','20042@sv.ktx.com','000525135431','Việt Nam','Mường','SV4441016011179','Nhàn','0755768861','Gia Lai',null);
+Insert into ThongTinCoBan values('10043','Vũ Đình','Năng','Thành phố Hồ Chí Minh','0','10/10/2001','0331510126','20043@sv.ktx.com','000716299536','Việt Nam','Brâu','SV7866227234053','Bổng','0461651794','Thành phố Hồ Chí Minh',null);
+Insert into ThongTinCoBan values('10044','Ngô Anh','Tuyền','Thái Nguyên','0','05/31/2000','0872171976','20044@sv.ktx.com','000541513584','Việt Nam','Tày','SV4152154120130','Sĩ','0750489695','Thái Nguyên',null);
+Insert into ThongTinCoBan values('10045','Ngô Huy','Cao','An Giang','0','09/18/2002','0327459243','20045@sv.ktx.com','000377630984','Việt Nam','Cơ Tu','SV3808585058043','Hiệp','0296282780','An Giang',null);
+Insert into ThongTinCoBan values('10046','Hồ Huy','Do','An Giang','0','07/17/1998','0188801245','20046@sv.ktx.com','000205377799','Việt Nam','Mạ','SV9648148564322','Hanh','0343676143','An Giang',null);
+Insert into ThongTinCoBan values('10047','Hồ Hữu','Khảo','Quảng Bình','0','09/29/2001','0344783105','20047@sv.ktx.com','000704358193','Việt Nam','Hoa','SV7056163016477','Du','0451424321','Quảng Bình',null);
+Insert into ThongTinCoBan values('10048','Huỳnh Nhật','Tuyên','Trà Vinh','0','07/21/2000','0198553944','20048@sv.ktx.com','000226235957','Việt Nam','Si La','SV1479185273628','Khuyết','0721665656','Trà Vinh',null);
+Insert into ThongTinCoBan values('10049','Vũ Huy','Mai','Phú Yên','0','06/23/2001','0768156219','20049@sv.ktx.com','000797122754','Việt Nam','Người Bahnar','SV9346494416685','Long','0167980123','Phú Yên',null);
+Insert into ThongTinCoBan values('10050','Hoàng Hữu','Thiện','Cà Mau','0','06/26/1998','0495346465','20050@sv.ktx.com','000581681394','Việt Nam','Xơ Đăng','SV5155394686717','Quỳnh','0229502503','Cà Mau',null);
+Insert into ThongTinCoBan values('10051','Phạm Hữu','Trát','Hà Nội ','0','09/18/2002','0197101037','20051@sv.ktx.com','000908009445','Việt Nam','Bố Y','SV8200214456881','Ban','0721520450','Hà Nội ',null);
+Insert into ThongTinCoBan values('10052','Lê Huy','Thiệp','Gia Lai','0','04/05/2002','0837193155','20052@sv.ktx.com','000317588699','Việt Nam','Si La','SV6655820912589','Khâm','0975956256','Gia Lai',null);
+Insert into ThongTinCoBan values('10053','Huỳnh Anh','Nhân','Sơn La','0','02/13/1998','0417113418','20053@sv.ktx.com','000137932345','Việt Nam','Khmer','SV9593563974855','Cúc','0523371491','Sơn La',null);
+Insert into ThongTinCoBan values('10054','Bùi Thái','Thâu','Bình Định','0','09/18/1998','0861940055','20054@sv.ktx.com','000385281752','Việt Nam','Xơ Đăng','SV7620034231971','Ngọc','0353109890','Bình Định',null);
+Insert into ThongTinCoBan values('10055','Nguyễn Huy','Niêm','Hưng Yên','0','11/07/2000','0284192065','20055@sv.ktx.com','000286654518','Việt Nam','Cơ Ho','SV9539696503875','Khiêu','0557778540','Hưng Yên',null);
+Insert into ThongTinCoBan values('10056','Đỗ Huy','Viên','Quảng Trị','0','09/02/1999','0198816179','20056@sv.ktx.com','000210658614','Việt Nam','H Mông','SV6076897180109','Chính','0204515653','Quảng Trị',null);
+Insert into ThongTinCoBan values('10057','Lý Văn','Trần','Lào Cai','0','02/06/2000','0783939500','20057@sv.ktx.com','000482364850','Việt Nam','Ơ Đu','SV4020110109287','Huề','0949361093','Lào Cai',null);
+Insert into ThongTinCoBan values('10058','Phan Anh','Gia','Phú Yên','0','10/06/2000','0258856253','20058@sv.ktx.com','000510758194','Việt Nam','Si La','SV3099607884172','Túc','0980768995','Phú Yên',null);
+Insert into ThongTinCoBan values('10059','Ngô Huy','Nương','Sơn La','0','01/19/1998','0819435868','20059@sv.ktx.com','000152829746','Việt Nam','Xơ Đăng','SV6949228402371','Bưu','0414592310','Sơn La',null);
+Insert into ThongTinCoBan values('10060','Bùi Long','Trân','Hải Phòng','0','09/25/2000','0582042816','20060@sv.ktx.com','000567261586','Việt Nam','Cơ Ho','SV6912692246361','Nghiệp','0844158576','Hải Phòng',null);
+Insert into ThongTinCoBan values('10061','Bùi Nhật','Hanh','Hải Phòng','0','08/03/2002','0631371659','20061@sv.ktx.com','000589126908','Việt Nam','Mnông','SV1018732693249','Biện','0707055545','Hải Phòng',null);
+Insert into ThongTinCoBan values('10062','Trần Huy','Nhạn','Phú Yên','0','03/15/2001','0152774696','20062@sv.ktx.com','000661346992','Việt Nam','Bố Y','SV7718310214642','Minh','0528981531','Phú Yên',null);
+Insert into ThongTinCoBan values('10063','Đặng Hữu','San','Quảng Bình','0','03/25/2000','0522880224','20063@sv.ktx.com','000336365389','Việt Nam','Rơ Măm','SV4903318039850','Lại','0846319565','Quảng Bình',null);
+Insert into ThongTinCoBan values('10064','Đặng Nhật','Vệ','Kiên Giang','0','01/16/2001','0626436621','20064@sv.ktx.com','000750035089','Việt Nam','Ngái','SV9031950066830','Tế','0509544125','Kiên Giang',null);
+Insert into ThongTinCoBan values('10065','Đỗ Huy','Cữu','Hải Dương','0','05/28/1998','0700413548','20065@sv.ktx.com','000265907479','Việt Nam','Hrê','SV3969788739791','Hữu','0746907519','Hải Dương',null);
+Insert into ThongTinCoBan values('10066','Lê Huy','Căn','Thừa Thiên Huế','0','09/01/2002','0677653812','20066@sv.ktx.com','000220773856','Việt Nam','Si La','SV8044316941585','Khái','0941574751','Thừa Thiên Huế',null);
+Insert into ThongTinCoBan values('10067','Phan Uy','Chư','Hà Nam','0','09/13/2001','0311353079','20067@sv.ktx.com','000495394363','Việt Nam','Xơ Đăng','SV9520850952375','Ân','0109586611','Hà Nam',null);
+Insert into ThongTinCoBan values('10068','Võ Huy','Dung','Khánh Hòa','0','04/23/2000','0486327636','20068@sv.ktx.com','000687151586','Việt Nam','Thái','SV1693576427586','Hiến','0502464932','Khánh Hòa',null);
+Insert into ThongTinCoBan values('10069','Dương Anh','Thiên','An Giang','0','07/29/1998','0868420242','20069@sv.ktx.com','000976941009','Việt Nam','Giáy','SV6442839157234','Mãn','0268312714','An Giang',null);
+Insert into ThongTinCoBan values('10070','Phan Đình','Quang','Đắk Lắk','0','05/14/2001','0295007109','20070@sv.ktx.com','000406004854','Việt Nam','Si La','SV9745254451413','Nhiệm','0479985475','Đắk Lắk',null);
+Insert into ThongTinCoBan values('10071','Huỳnh Uy','Thân','Hải Phòng','0','11/22/2002','0583983257','20071@sv.ktx.com','000995916591','Việt Nam','La Chí','SV7215754184429','Xuyên','0813331248','Hải Phòng',null);
+Insert into ThongTinCoBan values('10072','Ngô Huy','Mại','Đồng Nai','0','03/03/2001','0783188858','20072@sv.ktx.com','000199689339','Việt Nam','Giáy','SV9297370978526','Kỳ','0118814311','Đồng Nai',null);
+Insert into ThongTinCoBan values('10073','Vũ Huy','Hạnh','Vĩnh Long','0','09/26/1999','0492558195','20073@sv.ktx.com','000655545230','Việt Nam','Cơ Tu','SV2151222849096','Tiêm','0783768414','Vĩnh Long',null);
+Insert into ThongTinCoBan values('10074','Hoàng Nhật','Lý','Cà Mau','0','04/18/2000','0711567137','20074@sv.ktx.com','000561040840','Việt Nam','Stiêng','SV5469578782422','Thống','0199229842','Cà Mau',null);
+Insert into ThongTinCoBan values('10075','Phạm Huy','Cù','Sóc Trăng','0','12/14/2002','0963116374','20075@sv.ktx.com','000478892846','Việt Nam','Sán Dìu','SV7786836330846','Nghinh','0767320114','Sóc Trăng',null);
+Insert into ThongTinCoBan values('10076','Lê Thái','Tăng','Hà Nam','0','02/23/2001','0265827313','20076@sv.ktx.com','000138077392','Việt Nam','Lào','SV2130751184947','Hứa','0925046830','Hà Nam',null);
+Insert into ThongTinCoBan values('10077','Ngô Thị','Trữ','Cà Mau','1','08/26/1999','0938639526','20077@sv.ktx.com','000540764300','Việt Nam','Rơ Măm','SV1564512766677','Khanh','0302852342','Cà Mau',null);
+Insert into ThongTinCoBan values('10078','Trần Thị','Ðam','Bình Dương','1','03/26/1998','0784234114','20078@sv.ktx.com','000677402822','Việt Nam','Mảng','SV7712587414402','Ðoàn','0510259144','Bình Dương',null);
+Insert into ThongTinCoBan values('10079','Ngô Văn','Dụng','Nam Định','0','08/22/2000','0251344491','20079@sv.ktx.com','000122451325','Việt Nam','Hrê','SV8673321169832','Bân','0937087392','Nam Định',null);
+Insert into ThongTinCoBan values('10080','Bùi Long','Giang','Thừa Thiên Huế','0','03/18/2001','0885422546','20080@sv.ktx.com','000568779784','Việt Nam','La Hủ','SV3577037960986','Nghị','0359199146','Thừa Thiên Huế',null);
+Insert into ThongTinCoBan values('10081','Ngô Huy','Vinh','Bắc Kạn','0','05/18/2000','0888117781','20081@sv.ktx.com','000650115439','Việt Nam','Bru - Vân Kiều','SV2940374489931','Chăm','0310290723','Bắc Kạn',null);
+Insert into ThongTinCoBan values('10082','Lý Huy','Khoách','Hải Dương','0','11/23/2002','0826378810','20082@sv.ktx.com','000230023657','Việt Nam','Dao','SV7659866199376','v','0632718044','Hải Dương',null);
+Insert into ThongTinCoBan values('10083','Bùi Huy','Án','Vĩnh Long','0','10/30/2001','0809679369','20083@sv.ktx.com','000412071241','Việt Nam','Ngái','SV9657814820210','Chình','0203878010','Vĩnh Long',null);
+Insert into ThongTinCoBan values('10084','Hoàng Uy','Sảnh','Quảng Ninh','0','11/13/1999','0204008708','20084@sv.ktx.com','000304887856','Việt Nam','Lự','SV9515614923573','Kham','0616249099','Quảng Ninh',null);
+Insert into ThongTinCoBan values('10085','Lý Huy','Niệm','Nam Định','0','06/07/2001','0700127650','20085@sv.ktx.com','000570799267','Việt Nam','Dao','SV1221854223521','Chình','0107371690','Nam Định',null);
+Insert into ThongTinCoBan values('10086','Vũ Văn','Cảnh','Hải Dương','0','09/23/2002','0493218845','20086@sv.ktx.com','000821584733','Việt Nam','Thổ','SV7695757869554','Nương','0451012073','Hải Dương',null);
+Insert into ThongTinCoBan values('10087','Vũ Như','Lệ','Hà Nội','0','12/22/2001','0518106893','levn@yahoo.com','000518017225','Việt Nam','Xơ Đăng','SV4456975074213','Nhuệ','0586284351','Hà Nội',null);
+Insert into ThongTinCoBan values('10088','Phạm Thị','Phương','Quảng Ninh','1','04/23/2001','0633342777','phuongpt@gmail.com','000581958799','Việt Nam','Bố Y','SV5073919520815','Dật','0882738503','Quảng Ninh',null);
+Insert into ThongTinCoBan values('10089','Nguyễn Thị Minh ','Thư','Bình Phước','1','06/13/2001','0204959011','thunmt@gmail.com','000782876171','Việt Nam','Mường','SV5690863967416','Huân','0475962457','Bình Phước',null);
+Insert into ThongTinCoBan values('10090','Đỗ Thị','Thủy','Ea Kar, Đăk Lăk','1','04/13/2001','0316563810','thuydt@gmail.com','000919760554','Việt Nam','Co','SV6307808414018','Nhuận','0446568899','Ea Kar, Đăk Lăk',null);
+Insert into ThongTinCoBan values('10091','Phạm Thị','Tiễn','Quảng Bình','1','12/24/2000','0853008154','20091@sv.ktx.com','000684077968','Việt Nam','La Ha','SV8071118941876','Cử','0169642421','Quảng Bình',null);
+Insert into ThongTinCoBan values('10092','Đỗ Thị','Tấn','Lào Cai','1','06/18/2000','0499552743','20092@sv.ktx.com','000831233039','Việt Nam','Gia Rai','SV8629423867089','Âu','0276786565','Lào Cai',null);
+Insert into ThongTinCoBan values('10093','Phan Thị','Ly','Quảng Trị','1','01/02/2002','0769113454','20093@sv.ktx.com','000133726464','Việt Nam','Khmer','SV1292703998794','Luân','0160052738','Quảng Trị',null);
+Insert into ThongTinCoBan values('10094','Võ Thị','Bảng','Hải Dương','1','07/02/1998','0915746731','20094@sv.ktx.com','000506477005','Việt Nam','Khmer','SV9761171094152','Chanh','0449648600','Hải Dương',null);
+Insert into ThongTinCoBan values('10095','Dương Thị','Âu','Quảng Trị','1','05/23/1999','0865594297','20095@sv.ktx.com','000656238427','Việt Nam','Xinh Mun','SV9893361696459','Hách','0186432116','Quảng Trị',null);
+Insert into ThongTinCoBan values('10096','Nguyễn Thị','Mộc','Cần Thơ','1','04/17/1999','0440066948','20096@sv.ktx.com','000758823622','Việt Nam','La Ha','SV8015192882121','Chánh','0879029051','Cần Thơ',null);
+Insert into ThongTinCoBan values('10097','Hoàng Thị','Dư','Lâm Đồng','1','07/04/2001','0412307079','20097@sv.ktx.com','000608344962','Việt Nam','Hrê','SV6280314873829','Trạc','0643813564','Lâm Đồng',null);
+Insert into ThongTinCoBan values('10098','Đặng Thị','Thì','Quảng Bình','1','10/10/2000','0785696484','20098@sv.ktx.com','000741172322','Việt Nam','Nùng','SV3578996963145','Xa','0638814441','Quảng Bình',null);
+Insert into ThongTinCoBan values('10099','Hoàng Thị','Liêm','Hưng Yên','1','01/06/2002','0635661558','20099@sv.ktx.com','000350023203','Việt Nam','Cơ Ho','SV6929436808671','Khang','0754604939','Hưng Yên',null);
+Insert into ThongTinCoBan values('10100','Nguyễn Thị','Sử','Bắc Ninh','1','10/14/2001','0162732150','20100@sv.ktx.com','000428422372','Việt Nam','Brâu','SV4881659819268','Ất','0393498253','Bắc Ninh',null);
+Insert into ThongTinCoBan values('10101','Vũ Thị','Kham','Phú Yên','1','12/16/2002','0248774566','20101@sv.ktx.com','000578485013','Việt Nam','Lô Lô','SV8475707787870','Lời','0630989207','Phú Yên',null);
+Insert into ThongTinCoBan values('10102','Võ Thị','Ngãi','Bình Phước','1','01/09/2002','0127703710','20102@sv.ktx.com','000113853619','Việt Nam','La Ha','SV9961366639400','Ðể','0194115107','Bình Phước',null);
+Insert into ThongTinCoBan values('10103','Hồ Thị','Sửu','Quảng Nam','1','01/20/2002','0630969160','20103@sv.ktx.com','000676907713','Việt Nam','Sán Chay','SV9472389679011','Triều','0440102526','Quảng Nam',null);
+Insert into ThongTinCoBan values('10104','Võ Thị','Trạc','Lai Châu','1','06/22/2002','0389413961','20104@sv.ktx.com','000426690702','Việt Nam','Si La','SV1353030854344','Tế','0547685727','Lai Châu',null);
+Insert into ThongTinCoBan values('10105','Đặng Thị','Vui','Thành phố Hồ Chí Minh','1','05/21/2002','0160666045','20105@sv.ktx.com','000787722225','Việt Nam','Co','SV2820700991434','Sinh','0351329147','Thành phố Hồ Chí Minh',null);
+Insert into ThongTinCoBan values('10106','Đặng Thị','Tuy','Thanh Hóa','1','03/23/2002','0662236086','20106@sv.ktx.com','000180682130','Việt Nam','Hrê','SV2108996161017','Ðôn','0803984087','Thanh Hóa',null);
+Insert into ThongTinCoBan values('10107','Ngô Thị','Tý','Bến Tre','1','01/04/2002','0212431948','20107@sv.ktx.com','000545295188','Việt Nam','Chăm','SV4769288094848','Vương','0976394735','Bến Tre',null);
+Insert into ThongTinCoBan values('10108','Võ Thị','Hào','Lào Cai','1','01/06/1998','0215068989','20108@sv.ktx.com','000817594280','Việt Nam','Tà Ôi','SV8050285167007','Trọng','0639203674','Lào Cai',null);
+Insert into ThongTinCoBan values('10109','Phan Thị','Duệ','Hà Nội ','1','03/06/2000','0723734134','20109@sv.ktx.com','000566654739','Việt Nam','Giẻ-Triêng','SV2988909337708','Cảo','0262143213','Hà Nội ',null);
+Insert into ThongTinCoBan values('10110','Huỳnh Thị','Phượng','Ninh Bình','1','05/11/2001','0930752030','20110@sv.ktx.com','000733558038','Việt Nam','Chơ Ro','SV8109825428741','Vân','0622519893','Ninh Bình',null);
+Insert into ThongTinCoBan values('10111','Phạm Thị','Củng','Kiên Giang','1','01/29/1999','0537638915','20111@sv.ktx.com','000850354068','Việt Nam','Mnông','SV7659341082674','Từ','0970023005','Kiên Giang',null);
+Insert into ThongTinCoBan values('10112','Đỗ Thị','Trữ','Nam Định','1','01/01/2002','0119424561','20112@sv.ktx.com','000742204926','Việt Nam','Phù Lá','SV9185183020430','Tấn','0834870966','Nam Định',null);
+Insert into ThongTinCoBan values('10113','Ngô Thị','Ðắc','Bến Tre','1','04/27/1998','0252220641','20113@sv.ktx.com','000693657310','Việt Nam','Kháng','SV6820635862111','Cầu','0372683677','Bến Tre',null);
+Insert into ThongTinCoBan values('10114','Dương Thị','Bạt','Phú Yên','1','01/10/2001','0792998346','20114@sv.ktx.com','000220194321','Việt Nam','Pu Péo','SV3299610934619','Ðiềm','0865233542','Phú Yên',null);
+Insert into ThongTinCoBan values('10115','Phạm Thị','Hiểu','Hải Phòng','1','10/12/2002','0275177473','20115@sv.ktx.com','000332974678','Việt Nam','Mảng','SV5633977382203','Phóng','0346759316','Hải Phòng',null);
+Insert into ThongTinCoBan values('10116','Phan Thị','Luyến','Hậu Giang','1','03/13/2001','0227542071','20116@sv.ktx.com','000365473570','Việt Nam','Khmer','SV4108592505320','Ðể','0541306210','Hậu Giang',null);
+Insert into ThongTinCoBan values('10117','Phan Thị','Hiệp','Điện Biên','1','08/04/2001','0712459445','20117@sv.ktx.com','000114148332','Việt Nam','Chăm','SV2396392024710','Viện','0345364598','Điện Biên',null);
+Insert into ThongTinCoBan values('10118','Huỳnh Thị','Cửu','Bà rịa – Vũng tàu','1','06/14/2001','0267590837','20118@sv.ktx.com','000485329298','Việt Nam','Phù Lá','SV5144702432974','Duật','0565512277','Bà rịa – Vũng tàu',null);
+Insert into ThongTinCoBan values('10119','Nguyễn Thị','Nghệ','An Giang','1','05/15/1999','0828486482','20119@sv.ktx.com','000724735594','Việt Nam','Brâu','SV4641829248333','Nho','0942147448','An Giang',null);
+
+
+Drop user "241819304";Create user "241819304" identified by "111111";Grant r_SinhVien to "241819304";
+Drop user "219460447";Create user "219460447" identified by "111111";Grant r_SinhVien to "219460447";
+Drop user "000356630234";Create user "000356630234" identified by "111111";Grant r_SinhVien to "000356630234";
+Drop user "000893367768";Create user "000893367768" identified by "111111";Grant r_SinhVien to "000893367768";
+Drop user "000443953197";Create user "000443953197" identified by "111111";Grant r_SinhVien to "000443953197";
+Drop user "000324744491";Create user "000324744491" identified by "111111";Grant r_SinhVien to "000324744491";
+Drop user "000661970328";Create user "000661970328" identified by "111111";Grant r_SinhVien to "000661970328";
+Drop user "000308369250";Create user "000308369250" identified by "111111";Grant r_SinhVien to "000308369250";
+Drop user "000457472493";Create user "000457472493" identified by "111111";Grant r_SinhVien to "000457472493";
+Drop user "000118271647";Create user "000118271647" identified by "111111";Grant r_SinhVien to "000118271647";
+Drop user "000863450445";Create user "000863450445" identified by "111111";Grant r_SinhVien to "000863450445";
+Drop user "000357722027";Create user "000357722027" identified by "111111";Grant r_SinhVien to "000357722027";
+Drop user "000422776719";Create user "000422776719" identified by "111111";Grant r_SinhVien to "000422776719";
+Drop user "000576902097";Create user "000576902097" identified by "111111";Grant r_SinhVien to "000576902097";
+Drop user "000200794120";Create user "000200794120" identified by "111111";Grant r_SinhVien to "000200794120";
+Drop user "000470576607";Create user "000470576607" identified by "111111";Grant r_SinhVien to "000470576607";
+Drop user "000598815192";Create user "000598815192" identified by "111111";Grant r_SinhVien to "000598815192";
+Drop user "000725930110";Create user "000725930110" identified by "111111";Grant r_SinhVien to "000725930110";
+Drop user "000915426713";Create user "000915426713" identified by "111111";Grant r_SinhVien to "000915426713";
+Drop user "000867486974";Create user "000867486974" identified by "111111";Grant r_SinhVien to "000867486974";
+Drop user "000294608388";Create user "000294608388" identified by "111111";Grant r_SinhVien to "000294608388";
+Drop user "000267010721";Create user "000267010721" identified by "111111";Grant r_SinhVien to "000267010721";
+Drop user "000530237700";Create user "000530237700" identified by "111111";Grant r_SinhVien to "000530237700";
+Drop user "000233484788";Create user "000233484788" identified by "111111";Grant r_SinhVien to "000233484788";
+Drop user "000899649899";Create user "000899649899" identified by "111111";Grant r_SinhVien to "000899649899";
+Drop user "000641227122";Create user "000641227122" identified by "111111";Grant r_SinhVien to "000641227122";
+Drop user "000499220442";Create user "000499220442" identified by "111111";Grant r_SinhVien to "000499220442";
+Drop user "000382938394";Create user "000382938394" identified by "111111";Grant r_SinhVien to "000382938394";
+Drop user "000481610131";Create user "000481610131" identified by "111111";Grant r_SinhVien to "000481610131";
+Drop user "000470664830";Create user "000470664830" identified by "111111";Grant r_SinhVien to "000470664830";
+Drop user "000112129530";Create user "000112129530" identified by "111111";Grant r_SinhVien to "000112129530";
+Drop user "000865525797";Create user "000865525797" identified by "111111";Grant r_SinhVien to "000865525797";
+Drop user "000392432301";Create user "000392432301" identified by "111111";Grant r_SinhVien to "000392432301";
+Drop user "000740600881";Create user "000740600881" identified by "111111";Grant r_SinhVien to "000740600881";
+Drop user "000909448571";Create user "000909448571" identified by "111111";Grant r_SinhVien to "000909448571";
+Drop user "000494804741";Create user "000494804741" identified by "111111";Grant r_SinhVien to "000494804741";
+Drop user "000243550483";Create user "000243550483" identified by "111111";Grant r_SinhVien to "000243550483";
+Drop user "000598401800";Create user "000598401800" identified by "111111";Grant r_SinhVien to "000598401800";
+Drop user "000710241051";Create user "000710241051" identified by "111111";Grant r_SinhVien to "000710241051";
+Drop user "000181372459";Create user "000181372459" identified by "111111";Grant r_SinhVien to "000181372459";
+Drop user "000965227390";Create user "000965227390" identified by "111111";Grant r_SinhVien to "000965227390";
+Drop user "000656465483";Create user "000656465483" identified by "111111";Grant r_SinhVien to "000656465483";
+Drop user "000525135431";Create user "000525135431" identified by "111111";Grant r_SinhVien to "000525135431";
+Drop user "000716299536";Create user "000716299536" identified by "111111";Grant r_SinhVien to "000716299536";
+Drop user "000541513584";Create user "000541513584" identified by "111111";Grant r_SinhVien to "000541513584";
+Drop user "000377630984";Create user "000377630984" identified by "111111";Grant r_SinhVien to "000377630984";
+Drop user "000205377799";Create user "000205377799" identified by "111111";Grant r_SinhVien to "000205377799";
+Drop user "000704358193";Create user "000704358193" identified by "111111";Grant r_SinhVien to "000704358193";
+Drop user "000226235957";Create user "000226235957" identified by "111111";Grant r_SinhVien to "000226235957";
+Drop user "000797122754";Create user "000797122754" identified by "111111";Grant r_SinhVien to "000797122754";
+Drop user "000581681394";Create user "000581681394" identified by "111111";Grant r_SinhVien to "000581681394";
+Drop user "000908009445";Create user "000908009445" identified by "111111";Grant r_SinhVien to "000908009445";
+Drop user "000317588699";Create user "000317588699" identified by "111111";Grant r_SinhVien to "000317588699";
+Drop user "000137932345";Create user "000137932345" identified by "111111";Grant r_SinhVien to "000137932345";
+Drop user "000385281752";Create user "000385281752" identified by "111111";Grant r_SinhVien to "000385281752";
+Drop user "000286654518";Create user "000286654518" identified by "111111";Grant r_SinhVien to "000286654518";
+Drop user "000210658614";Create user "000210658614" identified by "111111";Grant r_SinhVien to "000210658614";
+Drop user "000482364850";Create user "000482364850" identified by "111111";Grant r_SinhVien to "000482364850";
+Drop user "000510758194";Create user "000510758194" identified by "111111";Grant r_SinhVien to "000510758194";
+Drop user "000152829746";Create user "000152829746" identified by "111111";Grant r_SinhVien to "000152829746";
+Drop user "000567261586";Create user "000567261586" identified by "111111";Grant r_SinhVien to "000567261586";
+Drop user "000589126908";Create user "000589126908" identified by "111111";Grant r_SinhVien to "000589126908";
+Drop user "000661346992";Create user "000661346992" identified by "111111";Grant r_SinhVien to "000661346992";
+Drop user "000336365389";Create user "000336365389" identified by "111111";Grant r_SinhVien to "000336365389";
+Drop user "000750035089";Create user "000750035089" identified by "111111";Grant r_SinhVien to "000750035089";
+Drop user "000265907479";Create user "000265907479" identified by "111111";Grant r_SinhVien to "000265907479";
+Drop user "000220773856";Create user "000220773856" identified by "111111";Grant r_SinhVien to "000220773856";
+Drop user "000495394363";Create user "000495394363" identified by "111111";Grant r_SinhVien to "000495394363";
+Drop user "000687151586";Create user "000687151586" identified by "111111";Grant r_SinhVien to "000687151586";
+Drop user "000976941009";Create user "000976941009" identified by "111111";Grant r_SinhVien to "000976941009";
+Drop user "000406004854";Create user "000406004854" identified by "111111";Grant r_SinhVien to "000406004854";
+Drop user "000995916591";Create user "000995916591" identified by "111111";Grant r_SinhVien to "000995916591";
+Drop user "000199689339";Create user "000199689339" identified by "111111";Grant r_SinhVien to "000199689339";
+Drop user "000655545230";Create user "000655545230" identified by "111111";Grant r_SinhVien to "000655545230";
+Drop user "000561040840";Create user "000561040840" identified by "111111";Grant r_SinhVien to "000561040840";
+Drop user "000478892846";Create user "000478892846" identified by "111111";Grant r_SinhVien to "000478892846";
+Drop user "000138077392";Create user "000138077392" identified by "111111";Grant r_SinhVien to "000138077392";
+Drop user "000540764300";Create user "000540764300" identified by "111111";Grant r_SinhVien to "000540764300";
+Drop user "000677402822";Create user "000677402822" identified by "111111";Grant r_SinhVien to "000677402822";
+Drop user "000122451325";Create user "000122451325" identified by "111111";Grant r_SinhVien to "000122451325";
+Drop user "000568779784";Create user "000568779784" identified by "111111";Grant r_SinhVien to "000568779784";
+Drop user "000650115439";Create user "000650115439" identified by "111111";Grant r_SinhVien to "000650115439";
+Drop user "000230023657";Create user "000230023657" identified by "111111";Grant r_SinhVien to "000230023657";
+Drop user "000412071241";Create user "000412071241" identified by "111111";Grant r_SinhVien to "000412071241";
+Drop user "000304887856";Create user "000304887856" identified by "111111";Grant r_SinhVien to "000304887856";
+Drop user "000570799267";Create user "000570799267" identified by "111111";Grant r_SinhVien to "000570799267";
+Drop user "000821584733";Create user "000821584733" identified by "111111";Grant r_SinhVien to "000821584733";
+Drop user "000518017225";Create user "000518017225" identified by "111111";Grant r_SinhVien to "000518017225";
+Drop user "000581958799";Create user "000581958799" identified by "111111";Grant r_SinhVien to "000581958799";
+Drop user "000782876171";Create user "000782876171" identified by "111111";Grant r_SinhVien to "000782876171";
+Drop user "000919760554";Create user "000919760554" identified by "111111";Grant r_SinhVien to "000919760554";
+Drop user "000684077968";Create user "000684077968" identified by "111111";Grant r_SinhVien to "000684077968";
+Drop user "000831233039";Create user "000831233039" identified by "111111";Grant r_SinhVien to "000831233039";
+Drop user "000133726464";Create user "000133726464" identified by "111111";Grant r_SinhVien to "000133726464";
+Drop user "000506477005";Create user "000506477005" identified by "111111";Grant r_SinhVien to "000506477005";
+Drop user "000656238427";Create user "000656238427" identified by "111111";Grant r_SinhVien to "000656238427";
+Drop user "000758823622";Create user "000758823622" identified by "111111";Grant r_SinhVien to "000758823622";
+Drop user "000608344962";Create user "000608344962" identified by "111111";Grant r_SinhVien to "000608344962";
+Drop user "000741172322";Create user "000741172322" identified by "111111";Grant r_SinhVien to "000741172322";
+Drop user "000350023203";Create user "000350023203" identified by "111111";Grant r_SinhVien to "000350023203";
+Drop user "000428422372";Create user "000428422372" identified by "111111";Grant r_SinhVien to "000428422372";
+Drop user "000578485013";Create user "000578485013" identified by "111111";Grant r_SinhVien to "000578485013";
+Drop user "000113853619";Create user "000113853619" identified by "111111";Grant r_SinhVien to "000113853619";
+Drop user "000676907713";Create user "000676907713" identified by "111111";Grant r_SinhVien to "000676907713";
+Drop user "000426690702";Create user "000426690702" identified by "111111";Grant r_SinhVien to "000426690702";
+Drop user "000787722225";Create user "000787722225" identified by "111111";Grant r_SinhVien to "000787722225";
+Drop user "000180682130";Create user "000180682130" identified by "111111";Grant r_SinhVien to "000180682130";
+Drop user "000545295188";Create user "000545295188" identified by "111111";Grant r_SinhVien to "000545295188";
+Drop user "000817594280";Create user "000817594280" identified by "111111";Grant r_SinhVien to "000817594280";
+Drop user "000566654739";Create user "000566654739" identified by "111111";Grant r_SinhVien to "000566654739";
+Drop user "000733558038";Create user "000733558038" identified by "111111";Grant r_SinhVien to "000733558038";
+Drop user "000850354068";Create user "000850354068" identified by "111111";Grant r_SinhVien to "000850354068";
+Drop user "000742204926";Create user "000742204926" identified by "111111";Grant r_SinhVien to "000742204926";
+Drop user "000693657310";Create user "000693657310" identified by "111111";Grant r_SinhVien to "000693657310";
+Drop user "000220194321";Create user "000220194321" identified by "111111";Grant r_SinhVien to "000220194321";
+Drop user "000332974678";Create user "000332974678" identified by "111111";Grant r_SinhVien to "000332974678";
+Drop user "000365473570";Create user "000365473570" identified by "111111";Grant r_SinhVien to "000365473570";
+Drop user "000114148332";Create user "000114148332" identified by "111111";Grant r_SinhVien to "000114148332";
+Drop user "000485329298";Create user "000485329298" identified by "111111";Grant r_SinhVien to "000485329298";
+Drop user "000724735594";Create user "000724735594" identified by "111111";Grant r_SinhVien to "000724735594";
+
+Insert into BangThamSo values('1678','5485');
+Insert into BangThamSo values('1734','10557');
+Insert into BangThamSo values('2014','11799');
+Insert into BangThamSo values('2536','');
+Insert into BangThamSo values('2834','');
+Insert into BangThamSo values('2927','');
+
+Insert into ChiTietDien values('D00000001','HDDN00000001','01/01/2021','01/02/2021','4562','4661','182734');
+Insert into ChiTietDien values('D00000002','HDDN00000002','01/01/2021','01/02/2021','4253','4343','166122');
+Insert into ChiTietDien values('D00000003','HDDN00000003','01/01/2021','01/02/2021','4215','4310','175351');
+Insert into ChiTietDien values('D00000004','HDDN00000004','01/01/2021','01/02/2021','4256','4350','173505');
+Insert into ChiTietDien values('D00000005','HDDN00000005','01/01/2021','01/02/2021','3959','4058','182734');
+Insert into ChiTietDien values('D00000006','HDDN00000006','01/01/2021','01/02/2021','4786','4877','167968');
+Insert into ChiTietDien values('D00000007','HDDN00000007','01/01/2021','01/02/2021','4536','4629','171659');
+Insert into ChiTietDien values('D00000008','HDDN00000008','01/01/2021','01/02/2021','4369','4489','222728');
+Insert into ChiTietDien values('D00000009','HDDN00000009','01/01/2021','01/02/2021','4253','4365','207469');
+Insert into ChiTietDien values('D00000010','HDDN00000010','01/01/2021','01/02/2021','4251','4383','245617');
+Insert into ChiTietDien values('D00000011','HDDN00000011','01/01/2021','01/02/2021','3968','4093','232265');
+Insert into ChiTietDien values('D00000012','HDDN00000012','01/01/2021','01/02/2021','4357','4455','180888');
+Insert into ChiTietDien values('D00000013','HDDN00000013','01/01/2021','01/02/2021','3869','3966','179043');
+Insert into ChiTietDien values('D00000014','HDDN00000014','01/01/2021','01/02/2021','4576','4671','175351');
+Insert into ChiTietDien values('D00000015','HDDN00000015','01/01/2021','01/02/2021','4471','4567','177197');
+Insert into ChiTietDien values('D00000016','HDDN00000016','01/01/2021','01/02/2021','4896','5026','241802');
+Insert into ChiTietDien values('D00000017','HDDN00000017','01/01/2021','01/02/2021','4235','4338','190302');
+Insert into ChiTietDien values('D00000018','HDDN00000018','01/01/2021','01/02/2021','4156','4301','270413');
+Insert into ChiTietDien values('D00000019','HDDN00000019','01/02/2021','01/03/2021','4002','4124','226543');
+Insert into ChiTietDien values('D00000020','HDDN00000020','01/02/2021','01/03/2021','3986','4080','173505');
+
+Insert into ChiTietNuoc values('N00000001','HDDN00000001','01/01/2021','01/02/2021','2758','2772','60335');
+Insert into ChiTietNuoc values('N00000002','HDDN00000002','01/01/2021','01/02/2021','2563','2583','109700');
+Insert into ChiTietNuoc values('N00000003','HDDN00000003','01/01/2021','01/02/2021','3452','3467','82275');
+Insert into ChiTietNuoc values('N00000004','HDDN00000004','01/01/2021','01/02/2021','3569','3585','87760');
+Insert into ChiTietNuoc values('N00000005','HDDN00000005','01/01/2021','01/02/2021','2563','2582','104215');
+Insert into ChiTietNuoc values('N00000006','HDDN00000006','01/01/2021','01/02/2021','2153','2165','65820');
+Insert into ChiTietNuoc values('N00000007','HDDN00000007','01/01/2021','01/02/2021','3458','3481','126155');
+Insert into ChiTietNuoc values('N00000008','HDDN00000008','01/01/2021','01/02/2021','2135','2148','71305');
+Insert into ChiTietNuoc values('N00000009','HDDN00000009','01/01/2021','01/02/2021','3256','3275','104215');
+Insert into ChiTietNuoc values('N00000010','HDDN00000010','01/01/2021','01/02/2021','2589','2604','82275');
+Insert into ChiTietNuoc values('N00000011','HDDN00000011','01/01/2021','01/02/2021','3457','3482','137125');
+Insert into ChiTietNuoc values('N00000012','HDDN00000012','01/01/2021','01/02/2021','2986','3014','153580');
+Insert into ChiTietNuoc values('N00000013','HDDN00000013','01/01/2021','01/02/2021','2896','2915','104215');
+Insert into ChiTietNuoc values('N00000014','HDDN00000014','01/01/2021','01/02/2021','2563','2579','87760');
+Insert into ChiTietNuoc values('N00000015','HDDN00000015','01/01/2021','01/02/2021','3562','3586','131640');
+Insert into ChiTietNuoc values('N00000016','HDDN00000016','01/01/2021','01/02/2021','3254','3275','115185');
+Insert into ChiTietNuoc values('N00000017','HDDN00000017','01/01/2021','01/02/2021','3569','3589','109700');
+Insert into ChiTietNuoc values('N00000018','HDDN00000018','01/01/2021','01/02/2021','3458','3474','87760');
+Insert into ChiTietNuoc values('N00000019','HDDN00000019','01/02/2021','01/03/2021','3214','3227','71305');
+Insert into ChiTietNuoc values('N00000020','HDDN00000020','01/02/2021','01/03/2021','3122','3136','76790');
+
+Insert into HoaDon values('HDP00000001','10000','110A1','20000','01/01/2021','02/01/2021','Hóa đơn phòng','2300000','');
+Insert into HoaDon values('HDP00000002','10011','111A1','20002','01/01/2021','02/01/2021','Hóa đơn phòng','2300000','');
+Insert into HoaDon values('HDP00000003','10005','112A1','20006','01/01/2021','01/01/2021','Hóa đơn phòng','3000000','');
+Insert into HoaDon values('HDP00000004','10000','210A1','20012','01/01/2021','01/01/2021','Hóa đơn phòng','2300000','');
+Insert into HoaDon values('HDP00000005','10014','211A1','20020','01/01/2021','03/01/2021','Hóa đơn phòng','2300000','');
+Insert into HoaDon values('HDDN00000001','10007','110A1','20000','01/02/2021','01/02/2021','Hóa đơn điện nước','243069','');
+Insert into HoaDon values('HDDN00000002','10012','111A1','20002','01/02/2021','01/02/2021','Hóa đơn điện nước','275822','');
+Insert into HoaDon values('HDDN00000003','10010','112A1','20006','01/02/2021','02/02/2021','Hóa đơn điện nước','257626','');
+Insert into HoaDon values('HDDN00000004','10011','210A1','20012','01/02/2021','03/02/2021','Hóa đơn điện nước','261265','');
+Insert into HoaDon values('HDDN00000005','10019','211A1','20020','01/02/2021','01/02/2021','Hóa đơn điện nước','286949','');
+Insert into HoaDon values('HDDN00000006','10017','212A1','20022','01/02/2021','01/02/2021','Hóa đơn điện nước','294033','');
+Insert into HoaDon values('HDDN00000007','10020','110A2','20026','01/02/2021','02/02/2021','Hóa đơn điện nước','311684','');
+Insert into HoaDon values('HDDN00000008','10008','111A2','20032','01/02/2021','01/02/2021','Hóa đơn điện nước','327892','');
+Insert into HoaDon values('HDDN00000009','10010','112A2','20040','01/02/2021','01/02/2021','Hóa đơn điện nước','369390','');
+Insert into HoaDon values('HDDN00000010','10008','210A2','20042','01/02/2021','01/02/2021','Hóa đơn điện nước','334468','');
+Insert into HoaDon values('HDDN00000011','10017','211A2','20046','01/02/2021','01/02/2021','Hóa đơn điện nước','283258','');
+Insert into HoaDon values('HDDN00000012','10013','212A2','20052','01/02/2021','02/02/2021','Hóa đơn điện nước','263111','');
+Insert into HoaDon values('HDDN00000013','10018','110A3','20060','01/02/2021','01/02/2021','Hóa đơn điện nước','308837','');
+Insert into HoaDon values('HDDN00000014','10012','111A3','20062','01/02/2021','02/02/2021','Hóa đơn điện nước','356987','');
+Insert into HoaDon values('HDDN00000015','10010','112A3','20066','01/02/2021','01/02/2021','Hóa đơn điện nước','300002','');
+Insert into HoaDon values('HDDN00000016','10009','210A3','20072','01/02/2021','01/02/2021','Hóa đơn điện nước','358173','');
+Insert into HoaDon values('HDDN00000017','10003','211A3','20080','01/02/2021','03/02/2021','Hóa đơn điện nước','297848','');
+Insert into HoaDon values('HDDN00000018','10015','212A3','20082','01/02/2021','01/02/2021','Hóa đơn điện nước','250295','');
+Insert into HoaDon values('HDDN00000019','10002','212A1','20022','01/03/2021','02/03/2021','Hóa đơn điện nước','297848','');
+Insert into HoaDon values('HDDN00000020','10004','212A2','20053','01/03/2021','02/03/2021','Hóa đơn điện nước','250295','');
+
+
+Insert into SinhVien values('20000','10000','110A1','DHNL','01/01/2021','12/31/2021','0');
+Insert into SinhVien values('20001','10001','110A1','DHKTL','01/01/2021','12/31/2021','0');
+Insert into SinhVien values('20002','10002','111A1','DHCNTT','01/01/2021','12/31/2021','0');
+Insert into SinhVien values('20003','10003','111A1','DHBK','01/01/2021','12/31/2021','0');
+Insert into SinhVien values('20004','10004','111A1','DHKTL','01/01/2021','12/31/2021','0');
+Insert into SinhVien values('20005','10005','111A1','DHBK','01/01/2021','12/31/2021','0');
+Insert into SinhVien values('20006','10006','112A1','DHNL','01/01/2021','12/31/2021','0');
+Insert into SinhVien values('20007','10007','112A1','DHYD','01/01/2021','12/31/2021','0');
+Insert into SinhVien values('20008','10008','112A1','DHCNTT','01/01/2021','12/31/2021','0');
+Insert into SinhVien values('20009','10009','112A1','DHQT','01/01/2021','12/31/2021','0');
+Insert into SinhVien values('20010','10010','112A1','DHQT','01/01/2021','12/31/2021','0');
+Insert into SinhVien values('20011','10011','112A1','DHKTL','01/01/2021','12/31/2021','0');
+Insert into SinhVien values('20012','10012','210A1','DHCNTT','01/01/2021','12/31/2021','0');
+Insert into SinhVien values('20013','10013','210A1','DHQT','01/01/2021','12/31/2021','0');
+Insert into SinhVien values('20014','10014','210A1','DHCNTT','01/01/2021','12/31/2021','0');
+Insert into SinhVien values('20015','10015','210A1','DHBK','01/01/2021','12/31/2021','0');
+Insert into SinhVien values('20016','10016','210A1','DHBK','01/01/2021','12/31/2021','0');
+Insert into SinhVien values('20017','10017','210A1','DHKHXHVNV','01/01/2021','12/31/2021','0');
+Insert into SinhVien values('20018','10018','210A1','DHCNTT','01/01/2021','12/31/2021','0');
+Insert into SinhVien values('20019','10019','210A1','DHKHXHVNV','01/01/2021','12/31/2021','0');
+Insert into SinhVien values('20020','10020','211A1','CDNH','01/01/2021','12/31/2021','0');
+Insert into SinhVien values('20021','10021','211A1','DHBK','01/01/2021','12/31/2021','0');
+Insert into SinhVien values('20022','10022','212A1','DHBK','01/01/2021','12/31/2021','0');
+Insert into SinhVien values('20023','10023','212A1','DHKHXHVNV','01/01/2021','12/31/2021','0');
+Insert into SinhVien values('20024','10024','212A1','DHBK','01/01/2021','12/31/2021','0');
+Insert into SinhVien values('20025','10025','212A1','DHQT','01/01/2021','12/31/2021','0');
+Insert into SinhVien values('20026','10026','110A2','DHNL','01/01/2021','12/31/2021','0');
+Insert into SinhVien values('20027','10027','110A2','DHKHXHVNV','01/01/2021','12/31/2021','0');
+Insert into SinhVien values('20028','10028','110A2','DHKHXHVNV','01/01/2021','12/31/2021','0');
+Insert into SinhVien values('20029','10029','110A2','DHYD','01/01/2021','12/31/2021','0');
+Insert into SinhVien values('20030','10030','110A2','DHNL','01/01/2021','12/31/2021','0');
+Insert into SinhVien values('20031','10031','110A2','DHBK','01/01/2021','12/31/2021','0');
+Insert into SinhVien values('20032','10032','111A2','CDNH','01/01/2021','12/31/2021','0');
+Insert into SinhVien values('20033','10033','111A2','DHCNTT','01/01/2021','12/31/2021','0');
+Insert into SinhVien values('20034','10034','111A2','CDNH','01/01/2021','12/31/2021','0');
+Insert into SinhVien values('20035','10035','111A2','DHQT','01/01/2021','12/31/2021','0');
+Insert into SinhVien values('20036','10036','111A2','DHKHXHVNV','01/01/2021','12/31/2021','0');
+Insert into SinhVien values('20037','10037','111A2','DHYD','01/01/2021','12/31/2021','0');
+Insert into SinhVien values('20038','10038','111A2','DHKHXHVNV','01/01/2021','12/31/2021','0');
+Insert into SinhVien values('20039','10039','111A2','DHNL','01/01/2021','12/31/2021','0');
+Insert into SinhVien values('20040','10040','112A2','DHBK','01/01/2021','12/31/2021','0');
+Insert into SinhVien values('20041','10041','112A2','CDNH','01/01/2021','12/31/2021','0');
+Insert into SinhVien values('20042','10042','210A2','CDNH','01/01/2021','12/31/2021','0');
+Insert into SinhVien values('20043','10043','210A2','DHKHXHVNV','01/01/2021','12/31/2021','0');
+Insert into SinhVien values('20044','10044','210A2','DHNL','01/01/2021','12/31/2021','0');
+Insert into SinhVien values('20045','10045','210A2','DHNL','01/01/2021','12/31/2021','0');
+Insert into SinhVien values('20046','10046','211A2','DHKTL','01/01/2021','12/31/2021','0');
+Insert into SinhVien values('20047','10047','211A2','DHQT','01/01/2021','12/31/2021','0');
+Insert into SinhVien values('20048','10048','211A2','DHCNTT','01/01/2021','12/31/2021','0');
+Insert into SinhVien values('20049','10049','211A2','DHYD','01/01/2021','12/31/2021','0');
+Insert into SinhVien values('20050','10050','211A2','DHBK','01/01/2021','12/31/2021','0');
+Insert into SinhVien values('20051','10051','211A2','CDNH','01/01/2021','12/31/2021','0');
+Insert into SinhVien values('20052','10052','212A2','DHBK','01/01/2021','12/31/2021','0');
+Insert into SinhVien values('20053','10053','212A2','DHKTL','01/01/2021','12/31/2021','0');
+Insert into SinhVien values('20054','10054','212A2','DHKHXHVNV','01/01/2021','12/31/2021','0');
+Insert into SinhVien values('20055','10055','212A2','DHNL','01/01/2021','12/31/2021','0');
+Insert into SinhVien values('20056','10056','212A2','DHYD','01/01/2021','12/31/2021','0');
+Insert into SinhVien values('20057','10057','212A2','DHBK','01/01/2021','12/31/2021','0');
+Insert into SinhVien values('20058','10058','212A2','DHCNTT','01/01/2021','12/31/2021','0');
+Insert into SinhVien values('20059','10059','212A2','DHCNTT','01/01/2021','12/31/2021','0');
+Insert into SinhVien values('20060','10060','110A3','CDNH','01/01/2021','12/31/2021','0');
+Insert into SinhVien values('20061','10061','110A3','DHYD','01/01/2021','12/31/2021','0');
+Insert into SinhVien values('20062','10062','111A3','DHKHXHVNV','01/01/2021','12/31/2021','0');
+Insert into SinhVien values('20063','10063','111A3','DHBK','01/01/2021','12/31/2021','0');
+Insert into SinhVien values('20064','10064','111A3','DHNL','01/01/2021','12/31/2021','0');
+Insert into SinhVien values('20065','10065','111A3','DHNL','01/01/2021','12/31/2021','0');
+Insert into SinhVien values('20066','10066','112A3','DHKHXHVNV','01/01/2021','12/31/2021','0');
+Insert into SinhVien values('20067','10067','112A3','CDNH','01/01/2021','12/31/2021','0');
+Insert into SinhVien values('20068','10068','112A3','DHKTL','01/01/2021','12/31/2021','0');
+Insert into SinhVien values('20069','10069','112A3','DHQT','01/01/2021','12/31/2021','0');
+Insert into SinhVien values('20070','10070','112A3','DHYD','01/01/2021','12/31/2021','0');
+Insert into SinhVien values('20071','10071','112A3','DHCNTT','01/01/2021','12/31/2021','0');
+Insert into SinhVien values('20072','10072','210A3','DHKHXHVNV','01/01/2021','12/31/2021','0');
+Insert into SinhVien values('20073','10073','210A3','DHKHXHVNV','01/01/2021','12/31/2021','0');
+Insert into SinhVien values('20074','10074','210A3','DHNL','01/01/2021','12/31/2021','0');
+Insert into SinhVien values('20075','10075','210A3','DHYD','01/01/2021','12/31/2021','0');
+Insert into SinhVien values('20076','10076','210A3','DHYD','01/01/2021','12/31/2021','0');
+Insert into SinhVien values('20077','10077','210A3','DHNL','01/01/2021','12/31/2021','0');
+Insert into SinhVien values('20078','10078','210A3','DHYD','01/01/2021','12/31/2021','0');
+Insert into SinhVien values('20079','10079','210A3','DHCNTT','01/01/2021','12/31/2021','0');
+Insert into SinhVien values('20080','10080','211A3','DHCNTT','01/01/2021','12/31/2021','0');
+Insert into SinhVien values('20081','10081','211A3','DHNL','01/01/2021','12/31/2021','0');
+Insert into SinhVien values('20082','10082','212A3','DHKTL','01/01/2021','12/31/2021','0');
+Insert into SinhVien values('20083','10083','212A3','DHYD','01/01/2021','12/31/2021','0');
+Insert into SinhVien values('20084','10084','212A3','DHCNTT','01/01/2021','12/31/2021','0');
+Insert into SinhVien values('20085','10085','212A3','DHQT','01/01/2021','12/31/2021','0');
+Insert into SinhVien values('20086','10086','110B1','DHKTL','01/02/2021','01/01/2022','0');
+Insert into SinhVien values('20087','10087','110B1','DHNL','01/03/2021','01/02/2022','0');
+Insert into SinhVien values('20088','10088','110B1','DHNL','01/04/2021','01/03/2022','0');
+Insert into SinhVien values('20089','10089','110B1','DHKTL','01/05/2021','01/04/2022','0');
+Insert into SinhVien values('20090','10090','110B1','DHCNTT','01/06/2021','01/05/2022','0');
+Insert into SinhVien values('20091','10091','110B1','DHCNTT','01/07/2021','01/06/2022','0');
+Insert into SinhVien values('20092','10092','111B1','DHQT','01/08/2021','01/07/2022','0');
+Insert into SinhVien values('20093','10093','111B1','DHKHXHVNV','01/09/2021','01/08/2022','0');
+Insert into SinhVien values('20094','10094','111B1','DHKTL','01/10/2021','01/09/2022','0');
+Insert into SinhVien values('20095','10095','111B1','DHNL','01/11/2021','01/10/2022','0');
+Insert into SinhVien values('20096','10096','111B1','DHNL','01/12/2021','01/11/2022','0');
+Insert into SinhVien values('20097','10097','111B1','DHCNTT','01/13/2021','01/12/2022','0');
+Insert into SinhVien values('20098','10098','111B1','DHYD','01/14/2021','01/13/2022','0');
+Insert into SinhVien values('20099','10099','111B1','DHYD','01/15/2021','01/14/2022','0');
+Insert into SinhVien values('20100','10100','112B1','DHKHXHVNV','01/16/2021','01/15/2022','0');
+Insert into SinhVien values('20101','10101','112B1','DHKHXHVNV','01/17/2021','01/16/2022','0');
+Insert into SinhVien values('20102','10102','210B1','DHYD','01/18/2021','01/17/2022','0');
+Insert into SinhVien values('20103','10103','210B1','DHKTL','01/19/2021','01/18/2022','0');
+Insert into SinhVien values('20104','10104','210B1','DHCNTT','01/20/2021','01/19/2022','0');
+Insert into SinhVien values('20105','10105','210B1','DHCNTT','01/21/2021','01/20/2022','0');
+Insert into SinhVien values('20106','10106','211B1','DHNL','01/22/2021','01/21/2022','0');
+Insert into SinhVien values('20107','10107','211B1','DHKTL','01/23/2021','01/22/2022','0');
+Insert into SinhVien values('20108','10108','211B1','DHYD','01/24/2021','01/23/2022','0');
+Insert into SinhVien values('20109','10109','211B1','CDNH','01/25/2021','01/24/2022','0');
+Insert into SinhVien values('20110','10110','211B1','DHBK','01/26/2021','01/25/2022','0');
+Insert into SinhVien values('20111','10111','211B1','DHKTL','01/27/2021','01/26/2022','0');
+Insert into SinhVien values('20112','10112','212B1','DHNL','01/28/2021','01/27/2022','0');
+Insert into SinhVien values('20113','10113','212B1','CDNH','01/29/2021','01/28/2022','0');
+Insert into SinhVien values('20114','10114','212B1','DHKTL','01/30/2021','01/29/2022','0');
+Insert into SinhVien values('20115','10115','212B1','DHYD','01/31/2021','01/30/2022','0');
+Insert into SinhVien values('20116','10116','212B1','DHYD','02/01/2021','01/31/2022','0');
+Insert into SinhVien values('20117','10117','212B1','CDNH','02/02/2021','02/01/2022','0');
+Insert into SinhVien values('20118','10118','212B1','CDNH','02/03/2021','02/02/2022','0');
+Insert into SinhVien values('20119','10119','212B1','DHBK','02/04/2021','02/03/2022','0');
+
+insert into PhongO values('110A1','A1','1 bàn, 1 ghế','Thường','2','0');
+insert into PhongO values('111A1','A1','1 bàn, 1 ghế','Thường','4','0');
+insert into PhongO values('112A1','A1','1 bàn, 1 ghế','Vip','6','0');
+insert into PhongO values('210A1','A1','2 bàn, 2 ghế','Vip','8','0');
+insert into PhongO values('211A1','A1','2 bàn, 2 ghế','Thường','2','0');
+insert into PhongO values('212A1','A1','2 bàn, 2 ghế','Thường','4','0');
+insert into PhongO values('110A2','A2','1 bàn, 1 ghế','Vip','6','0');
+insert into PhongO values('111A2','A2','1 bàn, 1 ghế','Vip','8','0');
+insert into PhongO values('112A2','A2','1 bàn, 1 ghế','Thường','2','0');
+insert into PhongO values('210A2','A2','2 bàn, 2 ghế','Thường','4','0');
+insert into PhongO values('211A2','A2','2 bàn, 2 ghế','Vip','6','0');
+insert into PhongO values('212A2','A2','2 bàn, 2 ghế','Vip','8','0');
+insert into PhongO values('110A3','A3','1 bàn, 1 ghế','Thường','2','0');
+insert into PhongO values('111A3','A3','1 bàn, 1 ghế','Thường','4','0');
+insert into PhongO values('112A3','A3','1 bàn, 1 ghế','Vip','6','0');
+insert into PhongO values('210A3','A3','2 bàn, 2 ghế','Vip','8','0');
+insert into PhongO values('211A3','A3','2 bàn, 2 ghế','Thường','2','0');
+insert into PhongO values('212A3','A3','2 bàn, 2 ghế','Thường','4','0');
+insert into PhongO values('110B1','B1','1 bàn, 1 ghế','Vip','6','0');
+insert into PhongO values('111B1','B1','1 bàn, 1 ghế','Vip','8','0');
+insert into PhongO values('112B1','B1','1 bàn, 1 ghế','Thường','2','0');
+insert into PhongO values('210B1','B1','2 bàn, 2 ghế','Thường','4','0');
+insert into PhongO values('211B1','B1','2 bàn, 2 ghế','Vip','6','0');
+insert into PhongO values('212B1','B1','2 bàn, 2 ghế','Vip','8','0');
+insert into PhongO values('110B2','B2','1 bàn, 1 ghế','Thường','2','2');
+insert into PhongO values('111B2','B2','1 bàn, 1 ghế','Thường','4','4');
+insert into PhongO values('112B2','B2','1 bàn, 1 ghế','Vip','6','6');
+insert into PhongO values('210B2','B2','2 bàn, 2 ghế','Vip','8','8');
+insert into PhongO values('211B2','B2','2 bàn, 2 ghế','Thường','2','2');
+insert into PhongO values('212B2','B2','2 bàn, 2 ghế','Thường','4','4');
+insert into PhongO values('110B3','B3','1 bàn, 1 ghế','Vip','6','6');
+insert into PhongO values('111B3','B3','1 bàn, 1 ghế','Vip','8','8');
+insert into PhongO values('112B3','B3','1 bàn, 1 ghế','Thường','2','2');
+insert into PhongO values('210B3','B3','2 bàn, 2 ghế','Thường','4','4');
+insert into PhongO values('211B3','B3','2 bàn, 2 ghế','Vip','6','6');
+insert into PhongO values('212B3','B3','2 bàn, 2 ghế','Vip','8','8');
+insert into PhongO values('110BA1','BA1','1 bàn, 1 ghế','Thường','2','2');
+insert into PhongO values('111BA1','BA1','1 bàn, 1 ghế','Thường','4','4');
+insert into PhongO values('112BA1','BA1','1 bàn, 1 ghế','Vip','6','6');
+insert into PhongO values('210BA1','BA1','2 bàn, 2 ghế','Vip','8','8');
+insert into PhongO values('211BA1','BA1','2 bàn, 2 ghế','Thường','2','2');
+insert into PhongO values('212BA1','BA1','2 bàn, 2 ghế','Thường','4','4');
+insert into PhongO values('110BA2','BA2','1 bàn, 1 ghế','Vip','6','6');
+insert into PhongO values('111BA2','BA2','1 bàn, 1 ghế','Vip','8','8');
+insert into PhongO values('112BA2','BA2','1 bàn, 1 ghế','Thường','2','2');
+insert into PhongO values('210BA2','BA2','2 bàn, 2 ghế','Thường','4','4');
+insert into PhongO values('211BA2','BA2','2 bàn, 2 ghế','Vip','6','6');
+insert into PhongO values('212BA2','BA2','2 bàn, 2 ghế','Vip','8','8');
+insert into PhongO values('110BA3','BA3','1 bàn, 1 ghế','Thường','2','2');
+insert into PhongO values('111BA3','BA3','1 bàn, 1 ghế','Thường','4','4');
+insert into PhongO values('112BA3','BA3','1 bàn, 1 ghế','Vip','6','6');
+insert into PhongO values('210BA3','BA3','2 bàn, 2 ghế','Vip','8','8');
+insert into PhongO values('211BA3','BA3','2 bàn, 2 ghế','Thường','2','2');
+insert into PhongO values('212BA3','BA3','2 bàn, 2 ghế','Thường','4','4');
+
+Insert into NhanVien values('10000','TC','','0','07/28/2021','0');
+Insert into NhanVien values('10001','TC','','1','09/01/2012','0');
+Insert into NhanVien values('10002','TT','','2','08/01/2018','0');
+Insert into NhanVien values('10003','YT','','3','09/20/2011','0');
+Insert into NhanVien values('10004','TT','TT','4','02/19/2017','0');
+Insert into NhanVien values('10005','BV','','5','09/16/2006','0');
+Insert into NhanVien values('10006','TT','','6','05/31/2018','0');
+Insert into NhanVien values('10007','TC','','7','08/18/2014','0');
+Insert into NhanVien values('10008','BV','BV','8','07/05/2017','0');
+Insert into NhanVien values('10009','TT','','9','06/07/2009','0');
+Insert into NhanVien values('10010','BV','','10','04/24/2025','0');
+Insert into NhanVien values('10011','YT','','11','11/20/2020','0');
+Insert into NhanVien values('10012','YT','','12','05/31/2007','0');
+Insert into NhanVien values('10013','TC','','13','12/23/2019','0');
+Insert into NhanVien values('10014','YT','YT','14','08/30/2020','0');
+Insert into NhanVien values('10015','TT','','15','01/10/2013','0');
+Insert into NhanVien values('10016','TC','','16','02/17/2018','0');
+Insert into NhanVien values('10017','BV','','17','10/02/2009','0');
+Insert into NhanVien values('10018','TC','','18','06/13/2011','0');
+Insert into NhanVien values('10019','TC','TC','19','03/17/2013','0');
+Insert into NhanVien values('10020','BV','','20','12/13/2010','0');
+
+Insert into PhongNhanVien values('YT','10014','Y tế','Phòng y tế');
+Insert into PhongNhanVien values('BV','10008','Bảo vệ','Cổng');
+Insert into PhongNhanVien values('TC','10019','Tài Chính','Tầng 1 tòa A1');
+Insert into PhongNhanVien values('TT','10004','Truyền thông','Tầng 2 tòa BA1');
+
+Drop user "000987593843"; Create user "000987593843" identified by "111111"; Grant r_QuanLiPhongNhanVien to "000987593843";
+Drop user "000481186979"; Create user "000481186979" identified by "111111"; Grant r_QuanLiPhongNhanVien to "000481186979";
+Drop user "000847764502"; Create user "000847764502" identified by "111111"; Grant r_QuanLiPhongNhanVien to "000847764502";
+Drop user "000186943592"; Create user "000186943592" identified by "111111"; Grant r_QuanLiPhongNhanVien to "000186943592";
+
+Insert into Toa values('A1','10020','Tòa A1','0');
+Insert into Toa values('A2','10017','Tòa A2','0');
+Insert into Toa values('A3','10011','Tòa A3','0');
+Insert into Toa values('B1','10010','Tòa B1','1');
+Insert into Toa values('B2','10020','Tòa B2','1');
+Insert into Toa values('B3','10011','Tòa B3','1');
+Insert into Toa values('BA1','10006','Tòa BA1','0');
+Insert into Toa values('BA2','10006','Tòa BA2','0');
+Insert into Toa values('BA3','10013','Tòa BA3','0');
+
+Drop user "000837442149";Create user "000837442149" identified by "111111"; Grant r_TruongToa to "000837442149";
+Drop user "000795496070";Create user "000795496070" identified by "111111"; Grant r_TruongToa to "000795496070";
+Drop user "000620336992";Create user "000620336992" identified by "111111"; Grant r_TruongToa to "000620336992";
+Drop user "000445764774";Create user "000445764774" identified by "111111"; Grant r_TruongToa to "000445764774";
+Drop user "000118471847";Create user "000118471847" identified by "111111"; Grant r_TruongToa to "000118471847";
+Drop user "000272153740";Create user "000272153740" identified by "111111"; Grant r_TruongToa to "000272153740";
+
+Insert into Truong values('DHCNTT','Đại học Công nghệ thông tin');
+Insert into Truong values('DHKHXHVNV','Đại học Khoa học Xã hội và Nhân văn');
+Insert into Truong values('DHQT','Đại học Quốc tế');
+Insert into Truong values('DHBK','Đại học Bách khoa');
+Insert into Truong values('DHKTL','Đại học Kinh tế Luật');
+Insert into Truong values('DHYD','Đại học Y dược');
+Insert into Truong values('DHNL','Đại học Nông lâm');
+Insert into Truong values('CDNH','Cao đẳng ngân hàng');
+
+alter table CHITIETDIEN
+   add constraint FK_CHITIETD_DIEN2_HOADON foreign key (IDHOADON)
+      references HOADON (IDHOADON);
+
+alter table CHITIETNUOC
+   add constraint FK_CHITIETN_NUOC2_HOADON foreign key (IDHOADON)
+      references HOADON (IDHOADON);
+
+alter table HOADON
+   add constraint FK_HOADON_CO_PHONGO foreign key (IDPHONGO)
+      references PHONGO (IDPHONGO);
+
+alter table HOADON
+   add constraint FK_HOADON_LAP_NHANVIEN foreign key (IDNHANVIEN)
+      references NHANVIEN (IDNHANVIEN);
+
+alter table HOADON
+   add constraint FK_HOADON_THANHTOAN_SINHVIEN foreign key (IDSINHVIEN)
+      references SINHVIEN (IDSINHVIEN);
+
+alter table NHANVIEN
+   add constraint FK_NHANVIEN_LAM_THONGTIN foreign key (ID)
+      references THONGTINCOBAN (ID);
+
+alter table NHANVIEN
+   add constraint FK_NHANVIEN_QUANLI2_PHONGNHA foreign key (IDPHONGNHANVIEN)
+      references PHONGNHANVIEN (IDPHONGNHANVIEN);
+
+alter table NHANVIEN
+   add constraint FK_NHANVIEN_THUOC_PHONGNHA foreign key (QUANLIPHONG)
+      references PHONGNHANVIEN (IDPHONGNHANVIEN);
+
+alter table PHONGNHANVIEN
+   add constraint FK_PHONGNHA_QUANLI_NHANVIEN foreign key (IDQUANLI)
+      references NHANVIEN (IDNHANVIEN);
+
+alter table PHONGO
+   add constraint FK_PHONGO_BAOGOM_TOA foreign key (IDTOA)
+      references TOA (IDTOA);
+
+alter table SINHVIEN
+   add constraint FK_SINHVIEN_HOC_TRUONG foreign key (IDTRUONG)
+      references TRUONG (IDTRUONG);
+
+alter table SINHVIEN
+   add constraint FK_SINHVIEN_LA_THONGTIN foreign key (ID)
+      references THONGTINCOBAN (ID);
+
+alter table SINHVIEN
+   add constraint FK_SINHVIEN_O_PHONGO foreign key (IDPHONGO)
+      references PHONGO (IDPHONGO);
+
+alter table TOA
+   add constraint FK_TOA_TRUONGTOA_NHANVIEN foreign key (IDNHANVIEN)
+      references NHANVIEN (IDNHANVIEN);
+
+commit;
