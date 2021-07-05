@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report8" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="bed0c067-d113-434c-b008-06a075c1e9d1">
+	<property name="ireport.zoom" value="1.9487171000000019"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="188"/>
+	<queryString>
+		<![CDATA[Select s.IDSinhvien, t.Ho, t.Ten, s.IDPhongO, s.IDTruong, s.NgayVao
+From hqtcsdl.ThongTinCoBan t join hqtcsdl.SinhVien s on t.ID = s.ID
+Where s.TrangThai != -1
+Order by s.IDSinhVien]]>
+	</queryString>
+	<field name="IDSINHVIEN" class="java.lang.String"/>
+	<field name="HO" class="java.lang.String"/>
+	<field name="TEN" class="java.lang.String"/>
+	<field name="IDPHONGO" class="java.lang.String"/>
+	<field name="IDTRUONG" class="java.lang.String"/>
+	<field name="NGAYVAO" class="java.sql.Timestamp"/>
+	<variable name="total" class="java.lang.Integer" calculation="Count">
+		<variableExpression><![CDATA[$F{IDSINHVIEN}]]></variableExpression>
+	</variable>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="230" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="81" width="555" height="79" uuid="cb11fca9-f2cb-4bf7-ab68-67b02da48c72"/>
+				<textElement textAlignment="Center">
+					<font size="24" isBold="true"/>
+				</textElement>
+				<text><![CDATA[THỐNG KÊ DANH SÁCH SINH VIÊN ĐANG Ở TRONG KÝ TÚC XÁ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="210" width="100" height="20" uuid="7fdb50fe-ad3c-4980-8d7e-eeedd53b181a"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Justified" verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[  Mã sinh viên]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="355" y="160" width="100" height="20" uuid="9bd2b14c-2724-4326-a397-76402eebea98"/>
+				<textElement textAlignment="Right" verticalAlignment="Bottom"/>
+				<text><![CDATA[Tính đến ngày:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="100" y="210" width="155" height="20" uuid="402bcd95-57c3-45fd-befe-de185d1f593b"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Justified" verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[  Họ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="255" y="210" width="100" height="20" uuid="9e6199d5-7c4f-4eb3-8313-57019d503bb5"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Justified" verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[  Tên]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="355" y="210" width="100" height="20" uuid="4cf06353-e033-4834-99b0-f3791d6955cf"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Justified" verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[  Phòng]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="455" y="210" width="100" height="20" uuid="b9819d68-66f1-4785-9eda-1d4c7aa5bc30"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Justified" verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[  Ngày vào]]></text>
+			</staticText>
+			<textField pattern="dd/MM/yyyy h.mm a">
+				<reportElement x="455" y="160" width="100" height="20" uuid="d4bb206d-2713-43c3-b755-360272019a20"/>
+				<textElement verticalAlignment="Bottom"/>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<image>
+				<reportElement x="0" y="0" width="100" height="81" uuid="f40022f0-4438-497f-9a7a-23946e8f276d"/>
+				<imageExpression><![CDATA["logo_ktx.jpg"]]></imageExpression>
+			</image>
+		</band>
+	</title>
+	<detail>
+		<band height="20" splitType="Stretch">
+			<textField>
+				<reportElement x="100" y="0" width="155" height="20" uuid="07d9d65f-3379-4dc3-8d22-a3296ca29007"/>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA["  " +$F{HO}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="255" y="0" width="100" height="20" uuid="a0cc69b3-335f-4035-865e-ab928128a06d"/>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA["  " + $F{TEN}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="355" y="0" width="100" height="20" uuid="782c92db-7e55-4766-8f9c-5c638a4f960c"/>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA["  " + $F{IDPHONGO}]]></textFieldExpression>
+			</textField>
+			<textField pattern="  dd/MM/yyyy">
+				<reportElement x="455" y="0" width="100" height="20" uuid="245b9a9d-83a5-4f4d-a626-114237609c31"/>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{NGAYVAO}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="0" width="100" height="20" uuid="51200e02-ee60-44bc-9090-111810f2049b"/>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25" lineStyle="Solid"/>
+				</box>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA["  " + $F{IDSINHVIEN}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="54" splitType="Stretch">
+			<break>
+				<reportElement x="0" y="6" width="100" height="1" uuid="98686be0-576a-4740-a794-b5afba30707c"/>
+			</break>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="39" splitType="Stretch">
+			<staticText>
+				<reportElement x="100" y="19" width="100" height="20" uuid="44e9eb37-b45e-49fe-92a8-768ee55edc56"/>
+				<textElement>
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Tổng số sinh viên:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="355" y="19" width="100" height="20" uuid="f78f97c0-437d-4107-a4c2-4e1d2f8e2551"/>
+				<textElement>
+					<font size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{total}]]></textFieldExpression>
+			</textField>
+		</band>
+	</summary>
+</jasperReport>

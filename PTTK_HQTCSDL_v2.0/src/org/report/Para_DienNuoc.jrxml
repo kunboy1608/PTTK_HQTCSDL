@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report4" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="4605d431-0209-4014-bee5-c7cea70b20c8">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="value" class="java.lang.Integer"/>
+	<queryString>
+		<![CDATA[SELECT IDHOADON, TRIGIA, IDPHONGO
+FROM hqtcsdl.HOADON
+WHERE LOAI = 'Hóa đơn điện nước' and TRIGIA >= $P{value}
+ORDER BY TRIGIA]]>
+	</queryString>
+	<field name="IDHOADON" class="java.lang.String"/>
+	<field name="TRIGIA" class="java.math.BigDecimal"/>
+	<field name="IDPHONGO" class="java.lang.String"/>
+	<variable name="IDHOADON_1" class="java.lang.Integer" calculation="Count">
+		<variableExpression><![CDATA[$F{IDHOADON}]]></variableExpression>
+	</variable>
+	<variable name="Tong" class="java.lang.Integer" calculation="Sum">
+		<variableExpression><![CDATA[$F{TRIGIA}]]></variableExpression>
+	</variable>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="95" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="14" width="553" height="32" uuid="17dc867a-a1f4-465c-b58e-e0de4e3d6b32"/>
+				<textElement textAlignment="Center">
+					<font size="20" isBold="true"/>
+				</textElement>
+				<text><![CDATA[DANH SÁCH CÁC HÓA ĐƠN ĐIỆN NƯỚC]]></text>
+			</staticText>
+			<textField pattern="dd/MM/yyyy h.mm a">
+				<reportElement x="453" y="75" width="100" height="20" forecolor="#00CC00" uuid="3a7fd9fa-c01d-4908-950f-a6c712bf2e45"/>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="408" y="75" width="45" height="20" forecolor="#33CC00" uuid="e4bcd758-4a85-41be-a527-6acf07fbe6fa"/>
+				<text><![CDATA[Ngày in:]]></text>
+			</staticText>
+			<textField pattern=" CÓ TRỊ GIÁ &gt;= #,### VND ">
+				<reportElement x="209" y="46" width="157" height="20" uuid="eb5cc4dd-e6e4-4545-9e62-f7af431480e3"/>
+				<textElement textAlignment="Center">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{value}]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<columnHeader>
+		<band height="32" splitType="Stretch">
+			<staticText>
+				<reportElement mode="Opaque" x="389" y="0" width="166" height="28" backcolor="#0099FF" uuid="61ff9d32-9b8c-4ebe-8493-ccf1b21a1b7b"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[TRỊ GIÁ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="199" y="0" width="190" height="28" backcolor="#0099FF" uuid="810004bb-5efa-41b3-b335-8533df54c6c9"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[MÃ HÓA ĐƠN]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="0" y="0" width="199" height="28" backcolor="#0099FF" uuid="dbb72e3a-7e03-441a-a64c-554bfab4b79c"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[MÃ PHÒNG]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="32" splitType="Stretch">
+			<textField pattern="#,### VND">
+				<reportElement mode="Opaque" x="389" y="0" width="166" height="28" backcolor="#CCFFFF" uuid="ec6063bc-b49d-45b6-bcc5-845b3403a707"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{TRIGIA}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Opaque" x="199" y="0" width="190" height="28" backcolor="#CCFFFF" uuid="b0ab7042-16be-4487-a2d5-46b40a9f4409"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{IDHOADON}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Opaque" x="0" y="0" width="199" height="28" backcolor="#CCFFFF" uuid="a6588972-2b64-4fb2-94e6-5f1264f6b08a"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{IDPHONGO}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<summary>
+		<band height="42" splitType="Stretch">
+			<textField>
+				<reportElement x="496" y="12" width="54" height="20" forecolor="#FF0000" uuid="1e1d7bfe-9e6d-474a-a6dc-669854a20fdd"/>
+				<textElement>
+					<font size="13" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{IDHOADON_1}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="424" y="12" width="73" height="20" forecolor="#FF0000" uuid="0e41bce8-faba-4da2-95c0-d50bb54c9da8"/>
+				<textElement>
+					<font size="13" isBold="true" isItalic="false"/>
+				</textElement>
+				<text><![CDATA[Số lượng: ]]></text>
+			</staticText>
+			<line>
+				<reportElement x="199" y="5" width="351" height="1" uuid="e542da08-74ea-4f4f-8fae-ad1517c12f9a"/>
+			</line>
+			<textField pattern="#,### VND">
+				<reportElement x="308" y="12" width="100" height="20" forecolor="#FF0000" uuid="795f09df-bfd6-47f1-8b04-8fcb43bca170"/>
+				<textElement>
+					<font size="13" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{Tong}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="209" y="12" width="100" height="20" forecolor="#FF0000" uuid="507ae1c2-3aa5-4258-9d91-b8f77174bed8"/>
+				<textElement>
+					<font size="13" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Tổng:]]></text>
+			</staticText>
+		</band>
+	</summary>
+</jasperReport>

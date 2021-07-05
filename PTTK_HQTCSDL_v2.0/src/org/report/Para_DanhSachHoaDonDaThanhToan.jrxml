@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="ParameterHD" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="55a0ce2b-78cd-4a1d-a41b-1bef338ebb29">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="Tháng" class="java.lang.String"/>
+	<queryString language="plsql">
+		<![CDATA[select extract(month from ngaylap), idhoadon, trigia, idphongo, ngaythu
+from hoadon
+where loai = 'Hóa đơn điện nước'
+and extract(month from ngaylap) = $P{Tháng}
+order by extract(month from ngaylap), idhoadon]]>
+	</queryString>
+	<field name="EXTRACT(MONTHFROMNGAYLAP)" class="java.math.BigDecimal"/>
+	<field name="IDHOADON" class="java.lang.String"/>
+	<field name="TRIGIA" class="java.math.BigDecimal"/>
+	<field name="IDPHONGO" class="java.lang.String"/>
+	<field name="NGAYTHU" class="java.sql.Timestamp"/>
+	<variable name="IDHOADON_1" class="java.lang.Integer" calculation="Count">
+		<variableExpression><![CDATA[$F{IDHOADON}]]></variableExpression>
+	</variable>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="107" splitType="Stretch">
+			<staticText>
+				<reportElement x="208" y="42" width="78" height="37" uuid="bcf2e4b5-34aa-49cd-96b3-9185130f09e9"/>
+				<textElement>
+					<font size="20" isBold="true"/>
+				</textElement>
+				<text><![CDATA[THÁNG ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="-1" y="-1" width="555" height="43" uuid="d52cd890-c4ea-4956-9b2c-9989b5b216d1"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="20" isBold="true"/>
+				</textElement>
+				<text><![CDATA[DANH SÁCH PHÒNG ĐÃ THANH TOÁN ĐIỆN NƯỚC ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="410" y="87" width="45" height="20" forecolor="#33CC00" uuid="a03bae01-9dab-4dde-9813-900469f5f75a"/>
+				<text><![CDATA[Ngày in:]]></text>
+			</staticText>
+			<textField pattern="dd/MM/yyyy h.mm a">
+				<reportElement x="455" y="87" width="100" height="20" forecolor="#00CC00" uuid="addbe007-8bac-4b5f-bf19-389ab708b46a"/>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="286" y="42" width="106" height="37" uuid="07278708-621a-4b74-9c70-5b272bfbaa92"/>
+				<textElement>
+					<font size="20" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{EXTRACT(MONTHFROMNGAYLAP)}]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<columnHeader>
+		<band height="30" splitType="Stretch">
+			<frame>
+				<reportElement mode="Opaque" x="0" y="0" width="554" height="28" backcolor="#0099FF" uuid="8be1a6b9-5bea-4121-b494-c169fb03c525"/>
+				<staticText>
+					<reportElement x="410" y="0" width="143" height="28" uuid="44827a0d-ff4e-4684-80d1-00ac89888adc"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[TRỊ GIÁ]]></text>
+				</staticText>
+			</frame>
+			<staticText>
+				<reportElement x="-1" y="0" width="129" height="28" uuid="b7fd1a7c-dcaa-4fc1-b1f0-94074d644563"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[SỐ PHÒNG]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="128" y="0" width="133" height="28" uuid="631c341a-d4c8-4ff7-b414-d3df60a97616"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[MÃ HÓA ĐƠN]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="261" y="0" width="149" height="28" uuid="5586c06c-5de0-4a43-b2ef-c02417cf26dd"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[NGÀY THU]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="34" splitType="Stretch">
+			<frame>
+				<reportElement mode="Opaque" x="-1" y="0" width="554" height="28" backcolor="#CCFFFF" uuid="d19db6ad-d256-411a-b3df-99053bba5667"/>
+			</frame>
+			<textField>
+				<reportElement x="0" y="0" width="128" height="28" uuid="25efa4ed-ceef-46c1-9311-d2fa463106b6"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{IDPHONGO}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="128" y="0" width="133" height="28" uuid="6b56751c-d2f8-41fa-a2ad-8e3427bf1823"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{IDHOADON}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy">
+				<reportElement x="261" y="0" width="149" height="28" uuid="1e7c1847-6e38-4c39-b2c7-500ba5cbd97d"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{NGAYTHU}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,### VND">
+				<reportElement x="410" y="0" width="144" height="28" uuid="8462f00b-0c46-4b6a-a63c-706d7bfdb696"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{TRIGIA}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<summary>
+		<band height="42" splitType="Stretch">
+			<line>
+				<reportElement x="416" y="4" width="116" height="1" uuid="82e042e1-0bab-4c92-8489-336386f63193"/>
+			</line>
+			<staticText>
+				<reportElement x="425" y="11" width="73" height="20" forecolor="#FF0000" uuid="928c6328-8975-42ff-875d-930981944ca5"/>
+				<textElement>
+					<font size="13" isBold="true" isItalic="false"/>
+				</textElement>
+				<text><![CDATA[Số lượng: ]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="497" y="11" width="53" height="20" forecolor="#FF0000" uuid="c809e1a0-ab96-4ebb-bcfe-804789a084b4"/>
+				<textElement>
+					<font size="13" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{IDHOADON_1}]]></textFieldExpression>
+			</textField>
+		</band>
+	</summary>
+</jasperReport>

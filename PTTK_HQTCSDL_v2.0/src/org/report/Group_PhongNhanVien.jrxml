@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="group_roomemployee" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="209625b6-5e5d-4d22-9b49-773f37d73e3e">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="86"/>
+	<queryString>
+		<![CDATA[Select TenPhong, count(IDNhanVien)
+From hqtcsdl.NhanVien n join hqtcsdl.PhongNhanVien p on n.IDPhongNhanVien = p.IDPhongNhanVien
+group by TenPhong]]>
+	</queryString>
+	<field name="TENPHONG" class="java.lang.String"/>
+	<field name="COUNT(IDNHANVIEN)" class="java.math.BigDecimal"/>
+	<variable name="total" class="java.lang.Integer" calculation="Sum">
+		<variableExpression><![CDATA[$F{COUNT(IDNHANVIEN)}]]></variableExpression>
+	</variable>
+	<group name="Room_Group">
+		<groupExpression><![CDATA[$F{TENPHONG}]]></groupExpression>
+		<groupHeader>
+			<band height="20">
+				<textField>
+					<reportElement x="273" y="0" width="146" height="20" uuid="f8f70266-d808-4df4-ac98-335fe3dd3f87"/>
+					<box>
+						<pen lineWidth="1.0"/>
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Center"/>
+					<textFieldExpression><![CDATA[$F{COUNT(IDNHANVIEN)}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="134" y="0" width="139" height="20" uuid="bf1cf690-aa54-4ba1-8f1a-24042a5c0068"/>
+					<box>
+						<pen lineWidth="1.0"/>
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textFieldExpression><![CDATA["  " + $F{TENPHONG}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupHeader>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="148" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="86" width="555" height="62" uuid="cf401816-196f-4600-8e7e-f0392515b0cd"/>
+				<textElement textAlignment="Center">
+					<font size="20" isBold="true"/>
+				</textElement>
+				<text><![CDATA[THỐNG KÊ SỐ NHÂN VIÊN Ở MỖI PHÒNG BAN TRONG KÝ TÚC XÁ]]></text>
+			</staticText>
+			<image>
+				<reportElement x="0" y="0" width="107" height="86" uuid="181621ff-9f8a-4802-aff5-ec4ec71de3ed"/>
+				<imageExpression><![CDATA["logo_ktx.jpg"]]></imageExpression>
+			</image>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="35" splitType="Stretch">
+			<staticText>
+				<reportElement x="354" y="15" width="100" height="20" uuid="051ec8c0-7ead-4bab-8e00-4509ca6807ab"/>
+				<textElement textAlignment="Right" verticalAlignment="Bottom"/>
+				<text><![CDATA[Tính đến ngày:]]></text>
+			</staticText>
+			<textField pattern="dd/MM/yyyy h.mm a">
+				<reportElement x="454" y="15" width="100" height="20" uuid="42638e7b-324a-4a74-a3fa-1394f4581f17"/>
+				<textElement verticalAlignment="Bottom"/>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="75" splitType="Stretch">
+			<staticText>
+				<reportElement x="273" y="55" width="146" height="20" uuid="f2dc0fb6-83c5-4ce0-b585-41fb1f2b23af"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Số nhân viên]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="134" y="55" width="139" height="20" uuid="21ba50c9-5a7c-47f7-9617-a792865d3015"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font isBold="true" isStrikeThrough="false"/>
+				</textElement>
+				<text><![CDATA[Tên phòng]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<pageFooter>
+		<band height="54" splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="291" splitType="Stretch">
+			<staticText>
+				<reportElement x="134" y="14" width="100" height="20" uuid="1d14ba28-7c6d-4602-85c8-6562c00d6d79"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[  Tổng số nhân viên:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="302" y="14" width="100" height="20" uuid="7e517ff1-c9d3-408e-ba8f-0db52085ee95"/>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{total}]]></textFieldExpression>
+			</textField>
+			<barChart>
+				<chart>
+					<reportElement x="0" y="34" width="554" height="194" uuid="f1799e18-f225-4ae2-82f7-9a4ce5b77b41"/>
+					<chartTitle/>
+					<chartSubtitle/>
+					<chartLegend/>
+				</chart>
+				<categoryDataset>
+					<categorySeries>
+						<seriesExpression><![CDATA[$F{TENPHONG}]]></seriesExpression>
+						<categoryExpression><![CDATA[$F{TENPHONG}]]></categoryExpression>
+						<valueExpression><![CDATA[$F{COUNT(IDNHANVIEN)}]]></valueExpression>
+					</categorySeries>
+				</categoryDataset>
+				<barPlot>
+					<plot/>
+					<itemLabel/>
+					<categoryAxisFormat>
+						<axisFormat/>
+					</categoryAxisFormat>
+					<valueAxisFormat>
+						<axisFormat/>
+					</valueAxisFormat>
+				</barPlot>
+			</barChart>
+			<staticText>
+				<reportElement x="131" y="243" width="323" height="20" uuid="b01f1e8e-9836-4c9f-b15c-f73d1c5555c7"/>
+				<textElement>
+					<font isItalic="true"/>
+				</textElement>
+				<text><![CDATA[Biểu đồ cột thể hiện số nhân viên ở mỗi phòng ban trong ký túc xá.]]></text>
+			</staticText>
+		</band>
+	</summary>
+</jasperReport>
